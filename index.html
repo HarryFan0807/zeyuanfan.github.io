@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeyuan Fan — Data & Strategy</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f8f5ef;color:#1c1c1c;font-size:16px;line-height:1.7}
+
+nav{background:#0d1f3c;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;border-bottom:1px solid rgba(201,168,76,0.3);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:Georgia,serif;font-size:1.1rem;color:#fff;text-decoration:none;letter-spacing:0.03em}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);text-decoration:none}
+.nav-links a:hover{color:#c9a84c}
+
+#hero{background:#0d1f3c;padding:7rem 10% 6rem;min-height:92vh;display:flex;flex-direction:column;justify-content:center}
+.hero-tag{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem}
+.hero-tag::before{content:'';display:block;width:32px;height:1px;background:#c9a84c}
+h1.hero-name{font-family:Georgia,serif;font-size:clamp(3rem,6vw,5rem);font-weight:700;color:#fff;line-height:1.05;margin-bottom:1.5rem}
+.hero-desc{font-size:1.05rem;color:rgba(255,255,255,0.58);max-width:500px;margin-bottom:2.5rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-p{background:#c9a84c;color:#0d1f3c;padding:0.75rem 1.75rem;font-size:0.85rem;font-weight:600;letter-spacing:0.07em;text-decoration:none;border-radius:2px;display:inline-block}
+.btn-p:hover{background:#e8c878}
+.btn-o{border:1px solid rgba(201,168,76,0.5);color:#c9a84c;padding:0.75rem 1.75rem;font-size:0.85rem;letter-spacing:0.07em;text-decoration:none;border-radius:2px;display:inline-block}
+.btn-o:hover{background:rgba(201,168,76,0.08);border-color:#c9a84c}
+
+section{padding:6rem 10%}
+.sec-label{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.75rem}
+.sec-label::before{content:'';display:block;width:24px;height:1px;background:#c9a84c}
+.sec-title{font-family:Georgia,serif;font-size:clamp(2rem,3.5vw,2.8rem);font-weight:400;color:#0d1f3c;margin-bottom:3rem;line-height:1.2}
+
+#about{background:#fff}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.about-text p{color:#444;font-size:0.97rem;margin-bottom:1.2rem;font-weight:300}
+.about-text strong{font-weight:600;color:#1c1c1c}
+.um-logo{display:inline-flex;align-items:center;gap:0.6rem;background:#00274c;padding:0.5rem 1rem;border-radius:3px;margin-bottom:1.5rem}
+.um-block{display:flex;flex-direction:column;line-height:1.2}
+.um-m{font-family:Georgia,serif;font-size:1.6rem;font-weight:700;color:#ffcb05;line-height:1}
+.um-name{font-size:0.7rem;letter-spacing:0.08em;color:#ffcb05;text-transform:uppercase;font-weight:600}
+.skills-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1.75rem}
+.skill{background:#f8f5ef;border:1px solid #e0dbd0;padding:0.32rem 0.8rem;font-size:0.75rem;color:#0d1f3c;border-radius:2px;font-weight:500}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.stat{background:#f8f5ef;border:1px solid #e0dbd0;padding:1.5rem;border-radius:2px}
+.stat-n{font-family:Georgia,serif;font-size:2rem;font-weight:700;color:#0d1f3c;line-height:1;margin-bottom:0.35rem}
+.stat-l{font-size:0.75rem;letter-spacing:0.07em;color:#6b6b6b;text-transform:uppercase}
+
+#experience{background:#f8f5ef}
+.exp-item{display:grid;grid-template-columns:180px 1fr;gap:2.5rem;padding:2rem 0;border-bottom:1px solid #e0dbd0}
+.exp-item:last-child{border-bottom:none}
+.exp-date{font-size:0.8rem;color:#6b6b6b;padding-top:0.25rem}
+.exp-co{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.25rem}
+.exp-role{font-family:Georgia,serif;font-size:1.2rem;color:#0d1f3c;margin-bottom:0.75rem}
+.exp-desc{font-size:0.92rem;color:#555;font-weight:300;line-height:1.65}
+.exp-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem}
+.exp-tag{background:rgba(13,31,60,0.07);color:#0d1f3c;padding:0.2rem 0.6rem;font-size:0.72rem;border-radius:2px}
+
+#projects{background:#fff}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.proj-card{background:#f8f5ef;border:1px solid #e0dbd0;padding:1.75rem;border-radius:2px;transition:border-color 0.2s,transform 0.2s;display:flex;flex-direction:column}
+.proj-card:hover{border-color:#c9a84c;transform:translateY(-2px)}
+.proj-num{font-family:Georgia,serif;font-size:2.5rem;font-weight:700;color:rgba(201,168,76,0.22);line-height:1;margin-bottom:0.75rem}
+.proj-name{font-family:Georgia,serif;font-size:1.1rem;color:#0d1f3c;margin-bottom:0.5rem}
+.proj-desc{font-size:0.88rem;color:#555;font-weight:300;line-height:1.6;margin-bottom:1rem;flex:1}
+.proj-stack{font-size:0.75rem;color:#c9a84c;font-weight:500;letter-spacing:0.03em;margin-bottom:1rem}
+.proj-link{display:inline-block;font-size:0.75rem;color:#0d1f3c;border:1px solid #c0bab0;padding:0.3rem 0.85rem;border-radius:2px;text-decoration:none;font-weight:500;align-self:flex-start}
+.proj-link:hover{background:#0d1f3c;color:#fff;border-color:#0d1f3c}
+
+#contact{background:#0d1f3c;text-align:center;padding:6rem 10%}
+#contact .sec-label{justify-content:center}
+#contact .sec-label::before{display:none}
+#contact .sec-title{color:#fff;margin-bottom:1rem}
+.contact-sub{color:rgba(255,255,255,0.5);font-size:1rem;font-weight:300;margin-bottom:2rem;max-width:440px;margin-left:auto;margin-right:auto}
+.resume-btn{display:inline-block;background:#c9a84c;color:#0d1f3c;font-size:0.85rem;font-weight:700;padding:0.8rem 2.25rem;border-radius:2px;text-decoration:none;margin-bottom:2.5rem;letter-spacing:0.06em}
+.resume-btn:hover{background:#e8c878}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.contact-link{display:inline-block;color:rgba(255,255,255,0.65);font-size:0.88rem;text-decoration:none;border:1px solid rgba(255,255,255,0.15);padding:0.65rem 1.25rem;border-radius:2px}
+.contact-link:hover{color:#c9a84c;border-color:rgba(201,168,76,0.4)}
+
+footer{background:#060f1e;padding:1.25rem 10%;display:flex;justify-content:space-between;color:rgba(255,255,255,0.25);font-size:0.75rem}
+
+@media(max-width:768px){
+  nav{padding:0 1.5rem}
+  #hero{padding:5rem 6% 4rem}
+  section{padding:4rem 6%}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem}
+  .exp-item{grid-template-columns:1fr;gap:0.5rem}
+  .nav-links{gap:1.2rem}
+  footer{flex-direction:column;gap:0.5rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="nav-logo"><img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAIAAgADASIAAhEBAxEB/8QAHQABAQACAwEBAQAAAAAAAAAAAAgGBwMEBQECCf/EAE0QAQABAgMBBw4LBgUFAQEAAAABAgMEBQYRBwghMUFRdRITFhgyNTdWYXSVsrPSFBUiIzZmcYGlseMXJEJSkZQzVZOh0yVicpLBU+H/xAAcAQEAAwEAAwEAAAAAAAAAAAAABQYHCAIDBAH/xABEEQEAAQICAwkMCAYDAQEAAAAAAQIDBAUGESEHMUFRYXGRsdESFhcyNDVTVHKBocETFBUiIzOi0jZCUpKywkNi8ILh/9oADAMBAAIRAxEAPwCMgfq3RVcriiimaqpnZEQRGs3nyImZ2Rwy9PA5RduxFd+Zt083LL0Msy2jDUxcubK7vPyU/Y76Vw+BjxrnQjL+NnxbfS4MNhMPh4+atUxP808MucElTTFMaohHVVTVOuQB+vwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmImNkxEw6mIy7CX9u21FFXPTwO2PGqimuNVUa3lTXVTOumdTHcblN+xE12vnaI5o4YeczN5uaZZRfibtmIpu8sclSNxGA2d1b6EjYxu3ubnSx4fa6aqKppqiYqjgmJfEWkhkeTYGMPai7cj52qP/WOZ5uRYWL+J67XG2i3w/bPIyJKYDD/8lXuRuOv/APHHvAEojAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHmZ3gYvW5xFqPnKY+VH80MfZmxrOcL8HxczTGyivhjyc8IrH4fV+JT70pgb+v8Ofc9rKbHWMDbp2fKqjqqvvdsjgjZAk6KYopimOBG11TVVNUgDyeIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6Od2OvYGqYj5Vv5Uf/XefKqYqpmmeKY2S8LlEV0zTPC87dc0VRVHA+gPN4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADeemd778dabyzOOy7rHw/B2sT1r4u6rqOroirqdvXY27Nuzbshoxc25n4ONMdEYT2NDOd0bPsfk2Gs14K53E1VTE7InZq5YlYtHcBYxl2um/TriI45jqad7Wr66fhf6p2tX10/C/1VBjJfCJpH6z+ij9q2d72Xej+NXanztavrp+F/qna1fXT8L/VUGHhE0j9Z/RR+073su9H8au1Pna1fXT8L/VO1q+un4X+qoMPCJpH6z+ij9p3vZd6P41dqfO1q+un4X+qdrV9dPwv9VQYeETSP1n9FH7Tvey70fxq7U+drV9dPwv9U7Wr66fhf6qgw8ImkfrP6KP2ne9l3o/jV2p87Wr66fhf6p2tX10/C/1VBh4RNI/Wf0UftO97LvR/GrtTVqXe75hl2RYvHZXqGM0xVi3NdGE+A9bm7s44irrlXDs27I2cM8DR0xMTMTExMccS/oMmffL7nXxXj69Y5PY2YHFV/v1uiOCzdme7/wDGqePmq+1fdBNPcRjsVOCzOvXVV4lWqI2/0zqiI28HLs4YQWe5DbsWvpsNTqiN+Ns+/b8WkAGxqcAAAAAAAAAAAAAAN06I3Acxz7TeFzbMs9+KLuJp65RhpwXXaqaJ7map6unZMxw7NnBGzl4I6W913O+yfOeyDNrG3J8BcjqKK44MTejhiny008Ezz8Ec6q2Rae6d38uvxgctr1V07a6tUTq4qdsTGvhni2RxrdkORUYi3N/ExrpnejbHv2fBPna1fXT8L/VO1q+un4X+qoMZ54RNI/Wf0UftWDvey70fxq7U+drV9dPwv9U7Wr66fhf6qgw8ImkfrP6KP2ne9l3o/jV2p87Wr66fhf6p2tX10/C/1VBh4RNI/Wf0UftO97LvR/GrtT52tX10/C/1Ttavrp+F/qqDDwiaR+s/oo/ad72Xej+NXanztavrp+F/qna1fXT8L/VUGHhE0j9Z/RR+073su9H8au1Pna1fXT8L/VO1q+un4X+qoMPCJpH6z+ij9p3vZd6P41dqdcdvcfguCv4nsy6vrVuqvqfizZt2Rt2beutBL7zzvJjvNrnqygRqm5xpBmOc28ROOud33M06tlMatfda/FiOJVtI8vw+DqtxYp1a9evbM8XHIA0xWgAAAAAAAAAAAAABc25n4ONMdEYT2NCGVzbmfg40x0RhPY0Mi3XfI8P7U9S3aJfnXOaOtkIDB16AAAAAAAAAAHXzLBYXMsvv4DHWKL+FxFubd23XG2KqZjZMOwPKmqqiqKqZ1TD8mImNUop3W9EYrQ2qbmAq6u5gL+25gb8x3dvbxT/3U8U/dPLDDlvbp+jcFrfSt/KcT1NvEU/OYS/McNm7EcE/ZPFMc08+xFudZbjcnzXE5XmNiqxi8Ncm3dt1ckx+ccsTyw6a0G0qpz3B9xen8a3sq5Y4Kvfw8U88M0zzKpwN7uqPEq3uTk7OR0wF5QYAAAAAAAAAAyTc40jj9aapw+TYKJotz8vE39m2LNqO6qny8kRyzMPBwWFxGNxlnB4SzXfxF+uLdq3RG2quqZ2REfesrcc0Jh9DaWowtUUXMzxOy5jr0ctWzgoif5aduyOeds8qmaa6UUZDgvuT+NXspji46p5I+M6o40zkuVzj7/3vEjf7PeyjT+UYDIcmwuUZZYizhMLbi3bojm5ZnnmZ2zM8szLvg5guXK7tc11zrmdszPDMtOppimIppjZAA8H6AAAAAAAAAA6eed5Md5tc9WUCL7zzvJjvNrnqygRuG5B+Vi+ej/ZSdLvGte/5ADZVNAAAAAAAAAAAAAAFzbmfg40x0RhPY0IZXNuZ+DjTHRGE9jQyLdd8jw/tT1Ldol+dc5o62QgMHXoAAAAAAAAAAAAab3yG538f5VOqMosbc0wNv94t0Rw4izH51U8cc8bY5IbkEpk2b4jKMZRi8PO2ng4JjhieSf8A933y4zCW8XZm1c3p+HK/nwNu74vc77Gs5nUOU2NmUY+5PXKKI4MNenhmnyU1cMxzcMczUTq7J82w+bYOjF4efu1dMTwxPLDKsZhLmEvTaub8f+1gCTfMAAAAAAA2XuCbntWs9Q/DswtT8SYCuKsRM8V+vji1H51eT7YfBmmZYfLMLXisROqmmNfPxRHLM7IfRhcNcxN2m1bjbLYu9l3O/geGo1rnNj95v0z8XWq4/wAO3PBN37ao4I8nDyxs3u/NFNNFFNFFMU00xsiIjZERzP05Sz7OsRnWNrxd/h3o4IjgiP8A22dctUwGCt4KxFqjg3+WeMAQz7AAAAAAAAAAAAHTzzvJjvNrnqygRfeed5Md5tc9WUCNw3IPysXz0f7KTpd41r3/ACAGyqaAAAAAAAAAAAAAALm3M/BxpjojCexoQyubcz8HGmOiMJ7GhkW675Hh/anqW7RL865zR1shAYOvQAAAAAAAAAAAAADo5/lOAz3JsVlGZ2Iv4TFW5t3KJ5ueOaYnZMTyTEIr3SdIY/RWqcRk+M2124+Xhr+zZF61M8FX28kxyTEriYTuw6Fw2udLV4SmKLeZ4bbcwN6f4a9nDRM/y1bNk/dPIvmgmlc5HjPor0/g3PG/6zwVdvJzQgs9yqMdZ7qiPv073LydiLhz47C4nA429gsZZrsYixXNu7brjZVRVE7JifvcDpimqKoiYnXEs1mJidUgD9fgAAD92rdy7dotWqKrlyuqKaaaY2zVM8URHOTOrbI9fRWm8x1ZqTC5HllG27fq+XXMfJtUR3VdXkiP68EccrW0hp/LtL6ewmSZXb6jD4ejZ1U91cq/irq55meFiO4XufW9E6b6/jbdM51jqYrxVXH1qnji1E+Tl558kQ2K5t0/0s+2cV9Ww8/g252f9quGrm4I5NvC0jIMq+p2vpLkffq+EcXaAM8WAAAAAAAAAAAAAAB0887yY7za56soEX3nneTHebXPVlAjcNyD8rF89H+yk6XeNa9/yAGyqaAAAAAAAAAAAAAALm3M/BxpjojCexoQyozSO7zpbJ9J5PlGIyrOa72BwNjDXKrdu11NVVFummZjbXE7NsM03S8nxuaYWxRg7c1zTVMzq4Niy6N4yxhbtc3qtUTDfY0x2xekP8nz3/Ttf8h2xekP8nz3/Ttf8jH+8jP/AFWr4dq3/beA9LDc4wDc33Vsi11nV/KsrwGZYe9Zw04iqrE0URTNMVU07I6mqZ27aoZ+gsfl2Jy699BiqJpr39U8r7rGItYiju7U64AHxPcAAAAAAAAAAAA0Tvmdzr4dha9aZNY24qxR/wBRtURw3LcRwXftpjgnycPJwzc/oNXTTXRNFdMVU1RsmJjbEwkXd83PKtG6h+H5dan4kx9c1WNkcFivjm1Pk5afJwcktz3NNLPpqIynFVfejxJnhj+nnjg5NnBCj6S5T3E/W7UbJ8bt7WswGxKeAAN/b2Tc669co1tnNj5uiZjLbVcd1VHBN6Y8nFT5ds8kS17uLaCva51PTbv010ZRhJi5jbscG2OS3E/zVbPujbPMsfC2LOFw1rDYa1RZs2qIot26I2U00xGyIiOSIhku6TpZ9UtTleFq+/VH35jgpng56uHk51s0byn6Wr61dj7sb3LPH7uvmcgDBF8AAAAAAAAAAAAAYPul7pmS6CxWCw+a4LMMRVi6Kq6Jw1NExEUzETt6qqOd9mBwGIx96LGGomqud6I5Nr1X79vD0TcuTqiGcDTHbF6Q/wAnz3/Ttf8AIdsXpD/J89/07X/Inu8jP/Vavh2vg+28B6WG2887yY7za56soEUzmO+E0licvxOHoyjO4qu2qqImbdrZEzEx/wDomZrO5nkuPyu3iYxlqaO6mnVr4dXda+tU9JcbYxVVubNWvVr+QA1JVwAAAAAAAAAAAAAAAAAG5d6P4Q8y6Jr9taVEl3ej+EPMuia/bWlRObN07z9V7NPU0jRnyCOeQBnqwAAAAAAAAAAAADydXafy7U+nsXkmaW+rw+Jo2bY7qir+GunmmJ4XrD22b1yxcpu251VUzriY4Jh410U10zTVGuJQnrfTWY6S1LisjzKj52zVtouRHybtE9zXT5Jj+k7Y44eIsPdz3P7ettNzdwdumM6wNM14Svi65HLameaeTmnyTKP71u5Zu12btFVu5RVNNdFUbJpmOCYmOSXUeh2k1vP8DFc7LtOyuOXjjkn4TrjgZfnGWVYC/wBzHizvT8vc/D0tNZLmGos9wmTZXZm7isVciiiOSOeqZ5IiNszPNDzoiZnZHDKsd71udxpPIvjnNLGzOswtxNVNUcOHtTwxR5Kp4Jq+6OTh92lmklrIMDN6dtyrZRHHPHzRvz0cLxynLasffij+WN+eTtlmu5/pXL9G6Yw2SZfEVdRHVX70xsqvXZ7quf8A5HJERHIyAHLGJxF3FXar16rXVVOuZnhmWo27dNqiKKI1RAA9DzAAAAAAAAAAAAE378Hv3p/za961KkE378Hv3p/za961K9bm/wDENnmq/wAZQekfm+v3dcNEAOm2ZgAAAAAAAAAAAAAAAAAAAAANy70fwh5l0TX7a0qJLu9H8IeZdE1+2tKic2bp3n6r2aeppGjPkEc8gDPVgAAAAAAAAAAAAAAE775vc763XXrfJrHyKpiMztURxTxReiPLxVeXZPLMqIceJsWcThruGxFqi7Zu0TRct1xtpqpmNkxMcsTCc0dz2/keOpxVrbG9VH9VPDHZxS+HMMDRjrE2q/dPFKaN7Vud/HGY06vzixty/CXP3K3XHBfvR/H5aaZ/rV9kqbdbLMDhMsy+xl+Aw9GHwuHtxbtWqI4KaY4odl7dJtIb2fY6rE3NlO9THFT2zvzy8mp45Zl9GAsRbp3+GeOf/bwAryQAAAAAAAAAAAAAAE378Hv3p/za961KkE378Hv3p/za961K9bm/8Q2ear/GUHpH5vr93XDRADptmYAAAAAAAAAAAAAAAAAAAAADcu9H8IeZdE1+2tKiS7vR/CHmXRNftrSonNm6d5+q9mnqaRoz5BHPIAz1YAAAAAAHm59neX5HTg68yvdZtYvFUYWi5Pc011RVNO2eSJmnZt55h6TUu+s8GFrpK16tb5vdt0Xsoyb4gza/tznAW46muueHE2Y4Iq8tUcETz8E8s7LR3t3buRxm1nbEVTFccUbNVXNt1T7p40Z9pU046cJXs1xEx2djbYCrpMAAAAAAAAAAAAAAeblOd5fmuOzHCYG9F6vLr8YfEVR3MXOpiqaYnlmNsbfLwcjCN3ndCo0Xp74HgLtPx3j6Jpw8RwzZo4puzHk4o5559ksd3o9ddzSOdXLldVddWY7aqqp2zMzbp2zMrRZ0bu/YdzNr2ynXEURx651TPNG9HHOvi2xleZU/XacJRtnVMzybNkN1gKukwAAAAABN+/B796f82vetSpBN+/B796f82vetSvW5v/ENnmq/xlB6R+b6/d1w0QA6bZmAAAAAAAAAAAAAAAAAAAAAA3LvR/CHmXRNftrSoku70fwh5l0TX7a0qJzZunefqvZp6mkaM+QRzyAM9WAAAAAABqXfWeDC10la9WtMOQZtj8iznC5vll+bGLwtyLluuOflieeJjbExyxMqe31ngwtdJWvVrSk6M3MrdF3IJorjXE1VRMTwxsZ3pNVNOP7qmdUxELi3N9X4DWul7GcYPZRc7jE2Nu2bN2I4afs5YnliYZKi3cf11idC6poxm2u5luJ2W8dYj+KjbwVRH81O3bH3xyrLwGLw2PwNjHYK/Rfw1+3Fy1conbFdMxtiYZPprotXkON/Dj8GvbTPFx0zyx8Y9615LmkY+z97x43+33ucBS0yAAAAAAAAAAPF1tqTLtJabxWeZnXstWKfkURPyrtc9zRT5Zn+nDPFD17123Zs13r1ym3bt0zVXXVOyKYjhmZnkhH+7lug3Nb6km1g7lVOS4GqaMJRxdcnim7Mc88nNHlmVu0O0YuZ/joonZap21zycUcs/CNc8CJzjM6cBY7qPGnej580MS1hqHMdU6hxWd5pc6vEYirbFMdzbpjuaKeaIjgUHvQ/odnHSEezpTKpreh/Q7OOkI9nS2TdFs27GjdVq3GqmmaIiI4IiYU7R2uqvMYqqnXM6+pu0Bza0cAAAAAATfvwe/en/Nr3rUqQTfvwe/en/Nr3rUr1ub/xDZ5qv8ZQekfm+v3dcNEAOm2ZgAAAAAAAAAAAAAAAAAAAAANy70fwh5l0TX7a0qJLu9H8IeZdE1+2tKic2bp3n6r2aeppGjPkEc8gDPVgAAAAAAal31ngwtdJWvVrSkq3fWeDC10la9WtKTo/cu8xf/dXyZzpR5d7o+Y3lvaN0X4txlGjc5v7MHia/wBwu1zwWrsz/h/+NU8XNV9vBo19pmaZiqmZiY4YmORb88ybD5zgq8JfjZO9PDE8ExzfGNnCicDjLmDvRdo4PjHE/oMNW737dEjV+Q/FWZ3onO8BREXJqnhxFvii59vFFXl2TytpOUs1yzEZXi68JiI1VUz08UxyTvw1TC4m3irUXbc7JAEc+gAAAAAABr7dv3QLWh9NTTha6Ks5xsTRg7c8PUc92Y5o5Oednlfbl2X38xxNGFw8a66p1R2zyRvzyPTiMRbw9qbtydUQ19vmt0XqYuaIya/wzs+M7tE8UccWYn/er7o54T05MReu4i/cv37ld27cqmuuuudtVVUztmZnlmZcbqzR7IrGR4GnC2eDbVP9VXDPZxRqhleYY65jr83a/dHFApreh/Q7OOkI9nSmVTW9D+h2cdIR7OlXd0v+H7ntU9aR0a8vp5p6m7QHNDSQAAAAABN+/B796f8ANr3rUqQTfvwe/en/ADa961K9bm/8Q2ear/GUHpH5vr93XDRADptmYAAAAAAAAAAAAAAAAAAAAADcu9H8IeZdE1+2tKiS7vR/CHmXRNftrSonNm6d5+q9mnqaRoz5BHPIAz1YAAAAAAGpd9Z4MLXSVr1a0pKt31ngwtdJWvVrSk6P3LvMX/3V8mc6UeXe6PmANGV16emM8zDTmfYTOsrvdaxWGr6qmeSqOWmY5YmNsTHlWroDVWX6x0xhs7y+rZFyOpvWpnbVZuR3VE/Zyc8TE8qF2ebi2vr+htT03L9VdeUYuYt421HDsjkuRH81O3742xzKBp7onGd4T6exH49uNn/aOGn5xy7OFP5Dmv1K73Fc/cq3+SePtWWOLC4ixisNaxWGu0XrF6iK7dyidtNdMxtiYnliYcrmqYmJ1S0mJ17YAH4AAAPldVNFFVddUU00xtmZnZERzg8vVuf5dpjT+LzvNLvUYbDUbZiO6rq5KaeeZnghFOudTZjq7UuKzzMqvnL07LduJ202bcdzRT5I/wB52zysw3e90OrWWoPgGXXZ+JMBXMWNk8F+vim7P5U+T7ZazdH7n2if2RhfreJp/GuR/bTxc878+6OBnOkGbfW7v0VufuU/GePsAGjK6Ka3of0OzjpCPZ0plU1vQ/odnHSEezpUHdL/AIfue1T1p/Rry+nmnqbtAc0NJAAAAAAE378Hv3p/za961KkE378Hv3p/za961K9bm/8AENnmq/xlB6R+b6/d1w0QA6bZmAAAAAAAAAAAAAAAAAAAzbLdyjdAzHLsNmGC07cu4XFWaL1m5GJsx1dFURNM7Jr2xtiY43yYvH4XBRFWJu00RO93UxGvpmHutWLt6dVumauaNbCRn37HN0nxZuf3Vj3z9jm6T4s3P7qx774e+PKPWrf99Pa932di/RVf2z2Mn3o/hDzLomv21pUTQe9y0Fq3Sus8bj8/yerBYa5l1dmiub1uvbXNy3MRspqmeKmf6N+Ofd0XF2MXndVyxXFdPc07aZiY3uOGgaO2rlrBRTcpmJ1zv7ABRU4AAAAAA1LvrPBha6SterWlJYW+E07nOp9B28tyLBTjMXGNt3ZtxXTR8mKa4mdtUxHLCe/2ObpPizc/urHvt+3N83y/CZN9HiL9FFXdVbKqqYng4JlQtI8JiLuM7q3RMxqjeiZYCM+/Y5uk+LNz+6se+fsc3SfFm5/dWPfX7vjyj1q3/fT2oD7Oxfoqv7Z7GAj2NV6Yz3SuPtYHP8BVgsRdtRdoom5RXtomZjbtpmY44n+jx0pZv2r9uLlqqKqZ3pidcTzTD5q6KrdU01xqmONvzey7ovwe9b0TnN/5q5VPxbdrnuap4ZtTPNPHT5dscsKLfz6t1127lNy3XVRXTMVU1UzsmJjimJV5uD7oVGtNO/BMfdpjO8BTFOJjim9RxRdiPLxTzTzbYYfulaJfQVzmuFp+7V48RwTP83NPDy7eFdtG82+kp+q3Z2x4vNxe7g5GyQGPreAAND75ndF+B4evRWTX/wB4vU/9Ru0T/h0TxWo8tUcM+Tg5Z2Z/uy68w+htMVX7dVFea4qJt4GzPD8rlrmP5adsT5Z2Ryo3xmJxGMxd7F4q9XexF6ubl25XO2quqZ2zMzz7Wsbm+iX127GZ4qn8OifuxP8ANVHDzU/GeaVU0jzb6Gj6tan707/JHFzz1c7hB6mmcgzfUuaU5XkmDnF4yqia4txXTT8mOOdtUxDebt23Zom5cqimmNszM6oiOWVEooqrqimmNcy8sZ9+xzdJ8Wbn91Y98/Y5uk+LNz+6se+iu+PKPWrf99Pa+r7Oxfoqv7Z7GAqa3of0OzjpCPZ0tR/sc3SfFm5/dWPfb23t+ls+0ppnMsJn+X1YK/exnXLdM3KK+qp6imNvyZnliVI3Q84y/FZHct2L9FdWunZFVMzv8USm9HsHiLWOpquW5iNU78THA2mA56aCAAAAAAJv34PfvT/m171qVINI75PROqNWZpk17T+VVY23h7Fym7MXrdHUzNUTHdVRzLpuf4mzhc9tXb9cU0xFW2ZiI8WeGUNn9qu7ga6aImZ2bI28MJmGffsc3SfFm5/dWPfP2ObpPizc/urHvuiO+PKPWrf99Pazz7Oxfoqv7Z7GAjO7+5BujWbNd67pq5Tbt0zVVPwqzwREbZ/jYI+3CZhhMbEzhrtNerf7mqJ1c+qZem7h7tnV9JTNOvjiYAH2PSAAAAAAAAAAAAAALm3M/BxpjojCexoQyubcz8HGmOiMJ7GhkW675Hh/anqW7RL865zR1shAYOvQAAAAAAAAAAAAACX99z9P8s6Kp9rdaYbn33P0/wAs6Kp9rdaYdV6EeYML7Pzllmd+X3ecevo/UOY6W1Fhc7yu51N/D1bZpnublM91RVzxMcH/APXkCy3rNu/bqtXI101RqmJ4YlGUV1UVRVTOqYXborUmXas03hc8yyvbZv0/LomflWq47qiryxP9eCeKXtI83DN0G5onUkWcZcqqyXHVRRi6OPrU8UXYjnjl548sQsCzct3rNF6zcpuW66YqorpnbFUTwxMTyw5c0x0YuZBjpojbaq20TycU8sfGNU8LUMnzOnH2O6nxo34+fNL9vO1JnOX6eyPFZzml6LOEwtua66uWeamI5ZmdkRHPL0JmIjbM7IhJ++E3RJ1ZnnxNlV/bkuAuTEVUzwYm7HBNflpjhin755eD1aJ6N3c/x0WY2W6dtc8UcXPO9HTwPPNcypwFia58ad6OXshhe6HqzMNZ6oxGdY+Zpiueow9nbtps2o7miPzmeWZmWOg6mw2GtYWzTZs09zTTGqI4ohlty5VdrmuudcyNpb13wrWPM735Q1a2lvXfCtY8zvflCF0t8yYv2Kup9uU+W2vahWoDktrAAAAAAAAAAAAAADp553kx3m1z1ZQIvvPO8mO82uerKBG4bkH5WL56P9lJ0u8a17/kANlU0AAAAAAAAAAAAAAXNuZ+DjTHRGE9jQhlc25n4ONMdEYT2NDIt13yPD+1PUt2iX51zmjrZCAwdegAAAAAAAAAAAAAEv77n6f5Z0VT7W60w3Pvufp/lnRVPtbrTDqvQjzBhfZ+csszvy+7zgC1IoUNvZd0XqqbeiM5v/KiJ+LLtc8ccc2Zn/en745oTy5MPeu4e/bxFi5Xau26ororonZVTVE7YmJ5JiUHpDkVjPMDVhb2zXtpn+mrgnt441vuy/HXMDfi7R7444Urvld0X4pwFej8nv7Mfirf79conhs2pjuPJVVH9KfthMzsZjjMVmOPv4/HX68RicRXNy7drnbVXVM7ZmXXerRnR+zkOBpw1vbVv1Tx1dnBHJy63lmWYV4+/Nyre4I4oAFhR42lvXfCtY8zvflDVraW9d8K1jzO9+UK9pb5kxfsVdSQyny217UK1AcltYAAAAAAAAAAAAAAdPPO8mO82uerKBF9553kx3m1z1ZQI3Dcg/KxfPR/spOl3jWvf8gBsqmgAAAAAAAAAAAAAC5tzPwcaY6IwnsaEMrm3M/BxpjojCexoZFuu+R4f2p6lu0S/Ouc0dbIQGDr0AAAAAAAAAAAAAAl/fc/T/LOiqfa3WmG599z9P8ALOiqfa3WmHVehHmDC+z85ZZnfl93nAFqRQAAAAAA2lvXfCtY8zvflDVraW9d8K1jzO9+UK9pb5kxfsVdSQyny217UK1AcltYAAAAAAAAAAAAAAdPPO8mO82uerKBF9553kx3m1z1ZQI3Dcg/KxfPR/spOl3jWvf8gBsqmgAAAAAAAAAAAAAC5tzPwcaY6IwnsaEMrm3M/BxpjojCexoZFuu+R4f2p6lu0S/Ouc0dbIQGDr0AAAAAAAAAAAAAAl/fc/T/ACzoqn2t1phuffc/T/LOiqfa3WmHVehHmDC+z85ZZnfl93nAFqRQAAAAAA2lvXfCtY8zvflDVraW9d8K1jzO9+UK9pb5kxfsVdSQyny217UK1AcltYAAAAAAAAAAAAAAdPPO8mO82uerKBF9553kx3m1z1ZQI3Dcg/KxfPR/spOl3jWvf8gBsqmgAAAAAAAAAAAAACydz3WWkMLoDTuGxOqsisX7OVYa3dtXMwtU1UVRapiaZiatsTE8GyUbCraU6LWtIrVu1duTR3EzOyInfjVwpTK80ry+uqqmnXrXN2c6J8cNPekrPvHZzonxw096Ss+8hkUvwRYP1irohNd9t70cdMrm7OdE+OGnvSVn3js50T44ae9JWfeQyHgiwfrFXRB323vRx0yubs50T44ae9JWfeOznRPjhp70lZ95DIeCLB+sVdEHfbe9HHTK5uznRPjhp70lZ947OdE+OGnvSVn3kMh4IsH6xV0Qd9t70cdMrm7OdE+OGnvSVn3js50T44ae9JWfeQyHgiwfrFXRB323vRx0yubs50T44ae9JWfeOznRPjhp70lZ95DIeCLB+sVdEHfbe9HHTK5uznRPjhp70lZ947OdE+OGnvSVn3kMh4IsH6xV0Qd9t70cdMrm7OdE+OGnvSVn3js50T44ae9JWfeQyHgiwfrFXRB323vRx0y21vos2yrONb5diMozPBZhZoy2miq5hb9N2mmrrtydkzTMxt2THB5WpQaXk+W05XgreDoq7qKI1a54VaxmJnFX6r0xqmQBJPmAAAAAAGyN7lmWXZVul2cXmmPwuBw8YW9TN3E3qbdETMRsjbVMRta3HwZpgKcwwd3C1TqiuJjXxa3vwt+cPepuxGvuZ1rm7OdE+OGnvSVn3js50T44ae9JWfeQyMx8EWD9Yq6IWfvtvejjplc3Zzonxw096Ss+8dnOifHDT3pKz7yGQ8EWD9Yq6IO+296OOmVzdnOifHDT3pKz7x2c6J8cNPekrPvIZDwRYP1irog77b3o46ZXN2c6J8cNPekrPvHZzonxw096Ss+8hkPBFg/WKuiDvtvejjplc3Zzonxw096Ss+8dnOifHDT3pKz7yGQ8EWD9Yq6IO+296OOmVzdnOifHDT3pKz7x2c6J8cNPekrPvIZDwRYP1irog77b3o46ZXN2c6J8cNPekrPvHZzonxw096Ss+8hkPBFg/WKuiDvtvejjplc3Zzonxw096Ss+8dnOifHDT3pKz7yGQ8EWD9Yq6IO+296OOmVt5zrbRlzKMbRRq7IKq6sPcimmnMrMzM9TPBHykSAuOiuidnRym7TauTX3erfiI1atfFzofNM2rzGaZqpiO51/EAWxEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4MBfjEYS3d5ZjZV9rnflNUVREw/aqZpnVIA/X4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA48VdpsYeu7VxUxtfkzERrl+xEzOqHiZBiutXpsVz8m5xeSXvsNiZidscEsjyfHRibfW7k/O0xw/90c6NwGI2fR1e5I42xt+kp97vgJNGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADw9QYuK64w1E/JpnbX9vM7mb5hThqJtWp23Zj/wBWOzMzMzM7ZlGY7Exq+jp96RwWHnX9JV7nx+rddVuuK6KppqidsTD8iK3kpvsjyzM7eIiLd2You/7VPQYY9HBZtfsRFF352iOeeGPvSmHx/wDLc6UbfwPDb6GRDqYbMcJf2dTdimr+Wrgl244Y2wkqa6a410zrR1VFVM6qoAHk8QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAde7jsJa2xXfo2xyRO2f9nRxGd2qeCxbqrnnq4IemvEW6N+XuosXK96HrTMRG2ZiIjll5GY5vTTE28LPVVctfJH2PMxeNxGJn5y5PU/yxwQ6yOv4+atlvY++zgYp217X2qqqqqaqpmZnjmXwEckH/2Q==" alt="University of Michigan" style="height:36px;width:36px;border-radius:6px;vertical-align:middle;margin-right:0.6rem;">Zeyuan Fan</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-tag">Available for full-time roles &middot; May 2026</div>
+  <h1 class="hero-name">Zeyuan Fan</h1>
+  <p class="hero-desc">Data analyst specializing in segmentation, campaign analytics, and financial modeling. University of Michigan, Class of 2026.</p>
+  <div class="hero-btns">
+    <a href="#experience" class="btn-p">View my work</a>
+    <a href="#contact" class="btn-o">Get in touch</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="sec-label">About me</div>
+  <h2 class="sec-title">Analyst by training,<br>strategist by nature</h2>
+  <div class="about-grid">
+    <div class="about-text">
+
+      <p>Pursuing a <strong>B.S. in Statistics, Economics &amp; International Studies</strong> with a Minor in Data Science. Certified in <strong>Meta Data Analytics</strong> and <strong>Corporate Finance Fundamentals</strong>.</p>
+      <p>My work spans marketing analytics, financial modeling, customer segmentation, and campaign strategy &mdash; from Irvine to Sarajevo to Fuzhou.</p>
+      <p>Fluent in <strong>Mandarin and English</strong>, bringing a cross-cultural lens to every analysis. Currently pursuing the <strong>CFA Level 1</strong> (August 2026).</p>
+      <div class="skills-row">
+        <span class="skill">Python</span>
+        <span class="skill">R</span>
+        <span class="skill">SQL</span>
+        <span class="skill">Advanced Excel</span>
+        <span class="skill">Tableau</span>
+        <span class="skill">Power BI</span>
+        <span class="skill">A/B Testing</span>
+        <span class="skill">Regression Analysis</span>
+        <span class="skill">Hypothesis Testing</span>
+        <span class="skill">K-means / Clustering</span>
+        <span class="skill">Financial Modeling</span>
+        <span class="skill">Market Research</span>
+        <span class="skill">Social Media Analytics</span>
+        <span class="skill">User Acquisition</span>
+        <span class="skill">Mandarin (Native)</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">$2M</div><div class="stat-l">Investor soft commitments</div></div>
+      <div class="stat"><div class="stat-n">20%</div><div class="stat-l">CTR lift, A/B testing</div></div>
+      <div class="stat"><div class="stat-n">23%</div><div class="stat-l">Decision efficiency gain</div></div>
+      <div class="stat"><div class="stat-n">25K+</div><div class="stat-l">Campaign reach</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="sec-label">Experience</div>
+  <h2 class="sec-title">Where I've made<br>an impact</h2>
+
+  <div class="exp-item">
+    <div class="exp-date">May 2025 &ndash; Aug 2025</div>
+    <div>
+      <div class="exp-co">Beyond Wealth Management &middot; Irvine, CA</div>
+      <div class="exp-role">Business Analyst Intern</div>
+      <p class="exp-desc">Researched 50+ prospective investor channels using SQL and Excel to run yield and competitive analysis. Prepared investor decks and Tableau dashboards that helped secure $2M in soft commitments. Built financial models applying Python and statistical analysis to improve investment decision-making efficiency by 23%. Identified three new investor channels worth ~$15M in potential AUM.</p>
+      <div class="exp-tags"><span class="exp-tag">SQL</span><span class="exp-tag">Python</span><span class="exp-tag">Tableau</span><span class="exp-tag">Financial Modeling</span><span class="exp-tag">Investor Relations</span></div>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-date">May 2025 &ndash; Jun 2025</div>
+    <div>
+      <div class="exp-co">Post Conflict Research Center &middot; Sarajevo, Bosnia &amp; Herzegovina</div>
+      <div class="exp-role">Data Analyst Intern</div>
+      <p class="exp-desc">Designed and executed 7+ social media campaigns for the 30th anniversary of the Srebrenica massacre, increasing engagement by 35% and reaching 25K+ users. Built an Excel tracker to monitor campaign KPIs (CVR, CPA, LTV), improving ROI by 20%. Conducted audience segmentation and performance analysis, boosting conversion by 15%.</p>
+      <div class="exp-tags"><span class="exp-tag">Excel</span><span class="exp-tag">Audience Segmentation</span><span class="exp-tag">Campaign Analytics</span><span class="exp-tag">KPI Tracking</span></div>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-date">Jan 2025 &ndash; Apr 2025</div>
+    <div>
+      <div class="exp-co">BioScience Co., Ltd &middot; Remote</div>
+      <div class="exp-role">Marketing Analyst Intern</div>
+      <p class="exp-desc">Delivered a comprehensive 20-slide competitive audit covering content, pricing, and frequency &mdash; leading to the launch of BioScience's social media strategy. Created five bundled product offerings with 10&ndash;15% discount logic to optimize slow-moving inventory clearance. Built a social media content architecture and weekly calendar.</p>
+      <div class="exp-tags"><span class="exp-tag">Competitive Analysis</span><span class="exp-tag">Content Strategy</span><span class="exp-tag">Pricing Analysis</span><span class="exp-tag">Social Media</span></div>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-date">May 2024 &ndash; Aug 2024</div>
+    <div>
+      <div class="exp-co">Clockout &middot; Remote</div>
+      <div class="exp-role">Marketing Analyst Intern</div>
+      <p class="exp-desc">Analyzed campaign performance and user cohorts using SQL and Excel; built Tableau dashboards to track spend efficiency. Designed and executed A/B tests on ad creatives, audience segments, and landing pages &mdash; boosting CTR by 20% and reducing CPA by 8%. Established a testing framework covering metric definition, sample size calculation, and post-experiment analysis.</p>
+      <div class="exp-tags"><span class="exp-tag">SQL</span><span class="exp-tag">A/B Testing</span><span class="exp-tag">Tableau</span><span class="exp-tag">Hypothesis Testing</span><span class="exp-tag">Campaign Analytics</span></div>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-date">Jun 2023 &ndash; Aug 2023</div>
+    <div>
+      <div class="exp-co">Fuzhou Umami Import &amp; Export Co., Ltd &middot; Fuzhou, China</div>
+      <div class="exp-role">Data Analyst Intern</div>
+      <p class="exp-desc">Performed product demand, profit margin, and customer behavior analysis to align product selections with consumer preferences. Conducted pricing analysis by evaluating market trends and competitor pricing to recommend optimal strategies for maximizing profitability in domestic and international markets.</p>
+      <div class="exp-tags"><span class="exp-tag">Demand Analysis</span><span class="exp-tag">Pricing Strategy</span><span class="exp-tag">Customer Behavior</span><span class="exp-tag">Market Research</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="sec-label">Projects</div>
+  <h2 class="sec-title">Analytics work<br>that tells a story</h2>
+  <div class="proj-grid">
+
+    <div class="proj-card">
+      <div class="proj-num">01</div>
+      <div class="proj-name">Customer Segmentation &amp; RFM Cluster Analysis</div>
+      <p class="proj-desc">RFM analysis on customer transaction data to segment users into 4 behavioral clusters. Applied K-means clustering and feature engineering integrating omnichannel engagement, email opt-in rates, and product category preferences. Developed executive dashboards with retention and cross-sell recommendations.</p>
+      <div class="proj-stack">Python &middot; K-means &middot; RFM &middot; Excel &middot; Data Visualization</div>
+      <a href="https://docs.google.com/presentation/d/17DlsXYYOuR-oFm-9fbgKkYMNvCBEUbSj/edit?usp=sharing" target="_blank" class="proj-link">View Project &rarr;</a>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-num">02</div>
+      <div class="proj-name">CitiBike Demand &amp; Rebalancing</div>
+      <p class="proj-desc">Power BI analysis of 1M+ rides across NYC. Identified station overflow/underflow patterns driven by commuter and weather signals. Proposed a rider incentive program saving ~$9/bike vs. traditional truck rebalancing.</p>
+      <div class="proj-stack">Power BI &middot; Demand Forecasting &middot; Operations Strategy</div>
+      <a href="https://drive.google.com/file/d/1EAyGExdMlvasg-ALQWY0mgA7pm1RDO-d/view?usp=sharing" target="_blank" class="proj-link">View Project &rarr;</a>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-num">03</div>
+      <div class="proj-name">Sujata Singh Endorsement Segmentation</div>
+      <p class="proj-desc">Perceptual segmentation of 632 urban millennial consumers using K-means and discriminant analysis. Identified the optimal celebrity endorsement target segment with a 72% classification hit rate and clear beauty category alignment.</p>
+      <div class="proj-stack">K-means &middot; Discriminant Analysis &middot; R &middot; Marketing Strategy</div>
+      <a href="https://drive.google.com/file/d/1OWWpxxvUG4xz75A4ewN8ZlG93IfurXgq/view?usp=sharing" target="_blank" class="proj-link">View Project &rarr;</a>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-num">04</div>
+      <div class="proj-name">Software Choice Modeling (The Coming of R)</div>
+      <p class="proj-desc">Multinomial logit model estimating analytics platform choice among organizations. Projected $0.59M incremental revenue from targeted conversion and $0.69M from a 1% perceptual attribute improvement.</p>
+      <div class="proj-stack">Multinomial Logit &middot; Elasticity Analysis &middot; Excel &middot; Revenue Modeling</div>
+      <a href="https://docs.google.com/document/d/1puHYF1k8w5C7DbGsYjPzALjZxN9qFCAB/edit" target="_blank" class="proj-link">View Project &rarr;</a>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-num">05</div>
+      <div class="proj-name">Ben's Blends Positioning Analysis</div>
+      <p class="proj-desc">Perceptual positioning and preference mapping for a specialty coffee brand using MDS. Three-dimensional solution explained 80%+ of variance. Recommended selective expansion toward premium-adjacent segments over value repositioning.</p>
+      <div class="proj-stack">MDS &middot; Positioning Maps &middot; Preference Analysis &middot; R</div>
+      <a href="https://docs.google.com/document/d/1yyYuECaipEK_Z_bL9cCb9waKUjEkbBZw/edit" target="_blank" class="proj-link">View Project &rarr;</a>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-num">06</div>
+      <div class="proj-name">Clockout A/B Testing Framework</div>
+      <p class="proj-desc">End-to-end experiment design across paid and organic channels including metric definition, sample size calculation, and post-experiment analysis. Delivered 20% CTR improvement and 8% CPA reduction.</p>
+      <div class="proj-stack">SQL &middot; Tableau &middot; Hypothesis Testing &middot; A/B Testing</div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contact">
+  <div class="sec-label">Contact</div>
+  <h2 class="sec-title">Let's connect</h2>
+  <p class="contact-sub">Open to full-time roles in data analytics, business development, and strategy starting May 2026.</p>
+  <a href="https://drive.google.com/file/d/1vb-Q4HpePRkMeIiPhOd2C_ubaP5fd1Mc/view?usp=sharing" target="_blank" class="resume-btn">Download Resume</a>
+  <div class="contact-links">
+    <a href="mailto:harryfan0807@gmail.com" class="contact-link">harryfan0807@gmail.com</a>
+    <a href="https://www.linkedin.com/in/zeyuan-fan-119a6128b/" target="_blank" class="contact-link">LinkedIn</a>
+    <a href="https://github.com/HarryFan0807" target="_blank" class="contact-link">GitHub</a>
+    <span class="contact-link" style="cursor:default">Ann Arbor, MI</span>
+  </div>
+</section>
+
+<footer>
+  <span>&copy; 2026 Zeyuan Fan</span>
+  <span>University of Michigan &middot; Class of 2026</span>
+</footer>
+
+</body>
+</html>
