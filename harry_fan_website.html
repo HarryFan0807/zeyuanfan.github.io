@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zeyuan Fan — Data & Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0d1f3c;
+    --navy-light: #1a3057;
+    --gold: #c9a84c;
+    --gold-light: #e8c878;
+    --cream: #f8f5ef;
+    --text: #1c1c1c;
+    --muted: #6b6b6b;
+    --border: #e0dbd0;
+    --white: #ffffff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(13, 31, 60, 0.97);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+
+  #hero::after {
+    content: '';
+    position: absolute;
+    top: 5%; right: 0%;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.06);
+  }
+
+  .hero-tag {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-name span {
+    color: var(--gold);
+  }
+
+  .hero-desc {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 500px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .btn-outline {
+    border: 1px solid rgba(201,168,76,0.5);
+    color: var(--gold);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: border-color 0.2s, background 0.2s;
+    display: inline-block;
+  }
+
+  .btn-outline:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  .hero-scroll .arrow {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(201,168,76,0.5), transparent);
+  }
+
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  /* SECTIONS */
+  section { padding: 6rem 10%; }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 3rem;
+    line-height: 1.2;
+  }
+
+  /* ABOUT */
+  #about {
+    background: var(--white);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: #444;
+    font-size: 1.02rem;
+    margin-bottom: 1.25rem;
+    font-weight: 300;
+  }
+
+  .about-text strong { font-weight: 500; color: var(--text); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .stat-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 2px;
+  }
+
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-card .label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .skills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .skill-tag {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    color: var(--navy);
+    border-radius: 2px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  /* EXPERIENCE */
+  #experience { background: var(--cream); }
+
+  .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 2.5rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .exp-item:last-child { border-bottom: none; }
+
+  .exp-date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    padding-top: 0.25rem;
+  }
+
+  .exp-company {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.25rem;
+  }
+
+  .exp-role {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+  }
+
+  .exp-desc {
+    font-size: 0.92rem;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.65;
+  }
+
+  .exp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .exp-tag {
+    background: rgba(13,31,60,0.06);
+    color: var(--navy);
+    padding: 0.2rem 0.6rem;
+    font-size: 0.72rem;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* PROJECTS */
+  #projects { background: var(--white); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    border-radius: 2px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .project-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .project-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: rgba(201,168,76,0.2);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .project-desc {
+    font-size: 0.88rem;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .project-result {
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* CONTACT */
+  #contact {
+    background: var(--navy);
+    text-align: center;
+    padding: 6rem 10%;
+  }
+
+  #contact .section-label { justify-content: center; }
+  #contact .section-label::before { display: none; }
+
+  #contact .section-title { color: var(--white); margin-bottom: 1rem; }
+
+  .contact-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(255,255,255,0.65);
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: color 0.2s;
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 0.65rem 1.25rem;
+    border-radius: 2px;
+  }
+
+  .contact-item:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+
+  .contact-icon {
+    width: 16px; height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  footer {
+    background: rgba(0,0,0,0.3);
+    padding: 1.25rem 10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255,255,255,0.25);
+    font-size: 0.75rem;
+  }
+
+  /* FADE IN */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    section { padding: 4rem 6%; }
+    #hero { padding: 0 6%; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .exp-item { grid-template-columns: 1fr; gap: 0.25rem; }
+    .exp-date { font-size: 0.75rem; color: var(--muted); }
+    .nav-links { gap: 1rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="nav-logo">Zeyuan Fan</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div>
+    <div class="hero-tag">Available for full-time roles · May 2026</div>
+    <h1 class="hero-name">Zeyuan <span>Fan</span></h1>
+    <p class="hero-desc">Data analyst and business strategist bridging quantitative insight with cross-cultural communication. University of Michigan, Class of 2026.</p>
+    <div class="hero-cta">
+      <a href="#experience" class="btn-primary">View my work</a>
+      <a href="#contact" class="btn-outline">Get in touch</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="arrow"></div>
+    scroll
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="fade-in">
+    <div class="section-label">About me</div>
+    <h2 class="section-title">Analyst by training,<br/>strategist by nature</h2>
+  </div>
+  <div class="about-grid fade-in">
+    <div class="about-text">
+      <p>I'm a senior at the <strong>University of Michigan</strong> studying Statistics, Economics, and International Studies with a Data Science minor — graduating May 2026.</p>
+      <p>My work sits at the intersection of <strong>data analytics and business strategy</strong>: building customer segmentation models, financial dashboards, and go-to-market frameworks that help organizations make smarter decisions.</p>
+      <p>Fluent in <strong>Mandarin and English</strong>, I bring a genuinely cross-cultural perspective that opens doors in international business contexts. I'm currently pursuing the <strong>CFA Level 1</strong> (August 2026).</p>
+      <div class="skills-row">
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">R</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Excel / VBA</span>
+        <span class="skill-tag">Tableau</span>
+        <span class="skill-tag">K-means / RFM</span>
+        <span class="skill-tag">Regression</span>
+        <span class="skill-tag">A/B Testing</span>
+        <span class="skill-tag">CFA L1 Candidate</span>
+        <span class="skill-tag">Mandarin (Native)</span>
+      </div>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="num">47K+</div>
+        <div class="label">Customers segmented</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">20%</div>
+        <div class="label">CTR lift via A/B test</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">$2M</div>
+        <div class="label">Investor soft commitments</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">25K+</div>
+        <div class="label">Campaign reach, Sarajevo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="fade-in">
+    <div class="section-label">Experience</div>
+    <h2 class="section-title">Where I've made<br/>an impact</h2>
+  </div>
+  <div class="exp-list">
+
+    <div class="exp-item fade-in">
+      <div class="exp-date">2025 – Present</div>
+      <div>
+        <div class="exp-company">Donn Palms, Inc.</div>
+        <div class="exp-role">Sales & Business Development Intern</div>
+        <p class="exp-desc">Educating local business owners on Amazon Business and guiding account setup and adoption. Building consultative sales skills through one-on-one owner engagements and pipeline management.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">B2B Sales</span>
+          <span class="exp-tag">Amazon Business</span>
+          <span class="exp-tag">Client Education</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item fade-in">
+      <div class="exp-date">2024 – 2025</div>
+      <div>
+        <div class="exp-company">Clockout</div>
+        <div class="exp-role">Marketing Analytics Intern</div>
+        <p class="exp-desc">Designed and ran an A/B testing framework that delivered a 20% improvement in click-through rate and an 8% reduction in cost-per-acquisition. Built dashboards to track campaign performance across channels.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">A/B Testing</span>
+          <span class="exp-tag">Campaign Analytics</span>
+          <span class="exp-tag">Python</span>
+          <span class="exp-tag">Dashboard Design</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item fade-in">
+      <div class="exp-date">2024</div>
+      <div>
+        <div class="exp-company">Beyond Wealth Management</div>
+        <div class="exp-role">Financial Analyst Intern</div>
+        <p class="exp-desc">Rebuilt an investor-facing dashboard for EB-5 visa program outreach and led Mandarin-language investor communications — generating $2M in soft commitments. Built financial models to support due diligence workflows.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">Financial Modeling</span>
+          <span class="exp-tag">Investor Relations</span>
+          <span class="exp-tag">Excel</span>
+          <span class="exp-tag">Mandarin</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item fade-in">
+      <div class="exp-date">2023</div>
+      <div>
+        <div class="exp-company">PCRC Sarajevo</div>
+        <div class="exp-role">Social Media & Campaigns Analyst</div>
+        <p class="exp-desc">Managed 7+ simultaneous social media campaigns for a nonprofit, reaching 25,000+ people. Coordinated multilingual content strategy and reported on engagement metrics to guide resource allocation.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">Social Media</span>
+          <span class="exp-tag">Campaign Management</span>
+          <span class="exp-tag">Nonprofit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item fade-in">
+      <div class="exp-date">2023</div>
+      <div>
+        <div class="exp-company">Umami Import & Export</div>
+        <div class="exp-role">Operations & Forecasting Intern</div>
+        <p class="exp-desc">Built a demand forecasting model that reoriented procurement decisions mid-cycle, preventing inventory overruns. Leveraged Mandarin to liaise directly with suppliers and logistics partners.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">Demand Forecasting</span>
+          <span class="exp-tag">Supply Chain</span>
+          <span class="exp-tag">Mandarin</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="fade-in">
+    <div class="section-label">Projects</div>
+    <h2 class="section-title">Analytics work<br/>that tells a story</h2>
+  </div>
+  <div class="projects-grid">
+
+    <div class="project-card fade-in">
+      <div class="project-num">01</div>
+      <div class="project-name">HBC Customer Segmentation</div>
+      <p class="project-desc">K-means + RFM analysis on ~47,000 customers for a luxury retail brand. Identified four behavioral clusters to inform targeted marketing spend and channel strategy.</p>
+      <div class="project-result">Python · K-means · RFM · Tableau</div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-num">02</div>
+      <div class="project-name">CitiBike Demand & Rebalancing</div>
+      <p class="project-desc">Power BI analysis of 1M+ rides across NYC. Identified station overflow/underflow patterns driven by commuter and weather signals, and proposed a rider incentive program saving ~$9/bike vs. truck rebalancing.</p>
+      <div class="project-result">Power BI · Demand Forecasting · Operations Strategy</div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-num">03</div>
+      <div class="project-name">Sujata Singh Endorsement Segmentation</div>
+      <p class="project-desc">Perceptual segmentation of 632 urban millennial consumers using K-means clustering and discriminant analysis. Identified Cluster 1 — young female beauty loyalists — as the optimal endorsement target with a 72% classification hit rate.</p>
+      <div class="project-result">K-means · Discriminant Analysis · R · Marketing Strategy</div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-num">04</div>
+      <div class="project-name">The Coming of R — Software Choice Modeling</div>
+      <p class="project-desc">Multinomial logit model estimating how organizations choose among data analytics platforms. Identified high-probability MATLAB prospects, projecting $0.59M incremental revenue from targeted conversion and $0.69M from a 1% attribute improvement.</p>
+      <div class="project-result">Multinomial Logit · Elasticity Analysis · Excel · Revenue Modeling</div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-num">05</div>
+      <div class="project-name">Ben's Blends Positioning Analysis</div>
+      <p class="project-desc">Perceptual positioning and preference mapping for a specialty coffee brand using MDS. Three-dimensional solution explained 80%+ of variance. Recommended selective expansion toward premium-adjacent segments rather than value repositioning.</p>
+      <div class="project-result">MDS · Positioning Maps · Segment Preference Analysis · R</div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-num">06</div>
+      <div class="project-name">Clockout A/B Testing Framework</div>
+      <p class="project-desc">End-to-end experiment design and analysis across paid and organic channels. Resulted in a 20% CTR improvement and 8% CPA reduction through iterative testing and statistical validation.</p>
+      <div class="project-result">Python · A/B Testing · Marketing Analytics · Dashboard Design</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="fade-in">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Let's connect</h2>
+    <p class="contact-sub">Open to full-time roles in data analytics, business development, and strategy starting May 2026.</p>
+    <div class="contact-links">
+      <a href="/cdn-cgi/l/email-protection#552f302c20343b33343b1520383c363d7b303120" class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <span class="__cf_email__" data-cfemail="364c534f43575850575876435b5f555e18535243">[email&#160;protected]</span>
+      </a>
+      <a href="https://linkedin.com/in/zeyuanfan" target="_blank" class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+        LinkedIn
+      </a>
+      <a href="#" class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        GitHub
+      </a>
+      <span class="contact-item" style="cursor:default;">
+        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Ann Arbor, MI
+      </span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Zeyuan Fan</span>
+  <span>University of Michigan · Class of 2026</span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('a[href^="#"]')
