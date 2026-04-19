@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: system-ui, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  p { font-size: 14px; color: #666; margin-bottom: 20px; }
+  .grid3 { display: flex; gap: 12px; margin-bottom: 16px; }
+  .grid6 { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .card {
+    flex: 1; min-width: 120px;
+    border: 1px solid #ddd; border-radius: 12px;
+    padding: 16px 10px; text-align: center;
+    cursor: pointer; background: #fff;
+  }
+  .card:hover { background: #f5f5f0; }
+  .icon { font-size: 28px; margin-bottom: 6px; }
+  .name { font-size: 14px; font-weight: 600; }
+  .desc { font-size: 12px; color: #888; margin-top: 3px; }
+  .hidden { display: none; }
+  .progress { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 16px; }
+  .bar { height: 4px; border-radius: 2px; background: #3b82f6; transition: width 0.3s; }
+  .question { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+  .opt {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid #ddd; border-radius: 8px;
+    padding: 11px 14px; margin-bottom: 8px;
+    font-size: 14px; cursor: pointer; background: #fff;
+  }
+  .opt:hover:not(:disabled) { background: #f5f5f0; }
+  .opt.correct { background: #eaf3de; border-color: #639922; color: #27500a; font-weight: 600; }
+  .opt.wrong { background: #feecec; border-color: #e24b4a; color: #791f1f; }
+  .feedback { font-size: 13px; color: #555; margin: 8px 0 12px; min-height: 18px; }
+  .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+  .score-tag { font-size: 13px; font-weight: 600; background: #f1f0e8; padding: 4px 12px; border-radius: 20px; }
+  .btn { border: 1px solid #ccc; background: transparent; border-radius: 8px; padding: 9px 20px; font-size: 14px; cursor: pointer; margin-right: 8px; }
+  .btn:hover { background: #f5f5f0; }
+  .big { font-size: 52px; font-weight: 700; color: #3b82f6; margin: 12px 0; }
+  .back { font-size: 13px; color: #888; background: none; border: none; cursor: pointer; padding: 0; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: Language -->
+<div id="s-lang">
+  <h2>Choose your language</h2>
+  <p>All questions will appear in your chosen language</p>
+  <div class="grid3">
+    <div class="card" onclick="pickLang('en')"><div class="icon">🇬🇧</div><div class="name">English</div></div>
+    <div class="card" onclick="pickLang('zh')"><div class="icon">🇨🇳</div><div class="name">中文</div></div>
+    <div class="card" onclick="pickLang('es')"><div class="icon">🇪🇸</div><div class="name">Español</div></div>
+  </div>
+</div>
+
+<!-- SCREEN 2: Genre -->
+<div id="s-genre" class="hidden">
+  <h2 id="g-title"></h2>
+  <p id="g-sub"></p>
+  <div class="grid6" id="genre-grid"></div>
+  <button class="back" onclick="goTo('s-lang')" id="back-lang-btn"></button>
+</div>
+
+<!-- SCREEN 3: Quiz -->
+<div id="s-quiz" class="hidden">
+  <div class="row">
+    <span class="badge" id="q-badge"></span>
+    <span class="score-tag" id="q-score"></span>
+  </div>
+  <div class="progress"><div class="bar" id="q-bar" style="width:0%"></div></div>
+  <p id="q-num" style="font-size:12px;color:#888;margin-bottom:8px;"></p>
+  <div class="question" id="q-text"></div>
+  <div id="q-opts"></div>
+  <div class="feedback" id="q-exp"></div>
+  <button class="btn hidden" id="q-next" onclick="nextQ()"></button>
+</div>
+
+<!-- SCREEN 4: Result -->
+<div id="s-result" class="hidden" style="text-align:center;padding:20px 0">
+  <span class="badge" id="r-badge"></span>
+  <div class="big" id="r-score"></div>
+  <p id="r-msg"></p>
+  <button class="btn" id="r-again" onclick="playAgain()"></button>
+  <button class="btn" id="r-genre" onclick="goGenre()"></button>
+  <button class="btn" id="r-lang" onclick="goTo('s-lang')"></button>
+</div>
+
+<script>
+var T = {
+  en: {
+    gTitle:"What do you want to be quizzed on?", gSub:"Pick a category to start",
+    backLang:"← Change language", score:"Score", q:"Question", of:"of",
+    next:"Next →", results:"See results →", again:"Play again",
+    chGenre:"Change category", chLang:"Change language",
+    msg: function(p){ return p>=80?"Outstanding!":p>=50?"Solid effort!":"Try again!"; },
+    genres:[
+      {id:"sci",  name:"Science",     desc:"Biology, physics, space",   icon:"🔬", bg:"#E6F1FB", col:"#0C447C"},
+      {id:"hist", name:"History",     desc:"Events, empires, dates",    icon:"🏛",  bg:"#FAEEDA", col:"#633806"},
+      {id:"geo",  name:"Geography",   desc:"Countries, capitals, maps", icon:"🌍", bg:"#EAF3DE", col:"#27500A"},
+      {id:"pop",  name:"Pop culture", desc:"Movies, music, celebs",     icon:"🎬", bg:"#FAECE7", col:"#712B13"},
+      {id:"spo",  name:"Sports",      desc:"Teams, records, legends",   icon:"⚽", bg:"#E1F5EE", col:"#085041"},
+      {id:"tec",  name:"Tech",        desc:"Computers, internet, AI",   icon:"💻", bg:"#EEEDFE", col:"#3C3489"}
+    ]
+  },
+  zh: {
+    gTitle:"你想考哪个主题？", gSub:"选择一个类别开始",
+    backLang:"← 切换语言", score:"得分", q:"第", of:"/",
+    next:"下一题 →", results:"查看结果 →", again:"再玩一次",
+    chGenre:"换个类别", chLang:"切换语言",
+    msg: function(p){ return p>=80?"太棒了！":p>=50?"不错！":"再试一次！"; },
+    genres:[
+      {id:"sci",  name:"科学",    desc:"生物、物理、宇宙",   icon:"🔬", bg:"#E6F1FB", col:"#0C447C"},
+      {id:"hist", name:"历史",    desc:"事件、帝国、时间线", icon:"🏛",  bg:"#FAEEDA", col:"#633806"},
+      {id:"geo",  name:"地理",    desc:"国家、首都、地图",   icon:"🌍", bg:"#EAF3DE", col:"#27500A"},
+      {id:"pop",  name:"流行文化", desc:"电影、音乐、明星",  icon:"🎬", bg:"#FAECE7", col:"#712B13"},
+      {id:"spo",  name:"体育",    desc:"球队、纪录、传奇",   icon:"⚽", bg:"#E1F5EE", col:"#085041"},
+      {id:"tec",  name:"科技",    desc:"计算机、互联网、AI", icon:"💻", bg:"#EEEDFE", col:"#3C3489"}
+    ]
+  },
+  es: {
+    gTitle:"¿Sobre qué quieres jugar?", gSub:"Elige una categoría para empezar",
+    backLang:"← Cambiar idioma", score:"Puntos", q:"Pregunta", of:"de",
+    next:"Siguiente →", results:"Ver resultados →", again:"Jugar de nuevo",
+    chGenre:"Cambiar categoría", chLang:"Cambiar idioma",
+    msg: function(p){ return p>=80?"¡Excelente!":p>=50?"¡Buen trabajo!":"¡Inténtalo de nuevo!"; },
+    genres:[
+      {id:"sci",  name:"Ciencia",     desc:"Biología, física, espacio", icon:"🔬", bg:"#E6F1FB", col:"#0C447C"},
+      {id:"hist", name:"Historia",    desc:"Eventos, imperios, fechas", icon:"🏛",  bg:"#FAEEDA", col:"#633806"},
+      {id:"geo",  name:"Geografía",   desc:"Países, capitales, mapas",  icon:"🌍", bg:"#EAF3DE", col:"#27500A"},
+      {id:"pop",  name:"Cultura pop", desc:"Cine, música, famosos",     icon:"🎬", bg:"#FAECE7", col:"#712B13"},
+      {id:"spo",  name:"Deportes",    desc:"Equipos, récords, leyendas",icon:"⚽", bg:"#E1F5EE", col:"#085041"},
+      {id:"tec",  name:"Tecnología",  desc:"Computadoras, internet, IA",icon:"💻", bg:"#EEEDFE", col:"#3C3489"}
+    ]
+  }
+};
+
+var QB = {
+  en:{
+    sci:[
+      {q:"What planet is closest in size to Earth?",o:["Mars","Venus","Mercury","Neptune"],a:1,e:"Venus is nearly identical in diameter and mass to Earth."},
+      {q:"What is the powerhouse of the cell?",o:["Nucleus","Ribosome","Mitochondria","Lysosome"],a:2,e:"Mitochondria produce ATP through cellular respiration."},
+      {q:"How many chromosomes do humans have?",o:["23","44","46","48"],a:2,e:"Humans have 46 chromosomes — 23 pairs."},
+      {q:"Chemical formula for water?",o:["HO","H2O","H3O","O2H"],a:1,e:"Two hydrogen atoms bonded to one oxygen atom."},
+      {q:"Which gas makes up most of Earth's atmosphere?",o:["Oxygen","Carbon dioxide","Argon","Nitrogen"],a:3,e:"Nitrogen makes up about 78% of the atmosphere."},
+      {q:"What force keeps planets in orbit?",o:["Magnetism","Gravity","Friction","Inertia"],a:1,e:"Gravity is the attractive force between masses."},
+      {q:"How many bones in the adult human body?",o:["196","206","216","226"],a:1,e:"Adults have 206 bones."},
+      {q:"Element symbol 'Au'?",o:["Silver","Aluminum","Gold","Copper"],a:2,e:"Au comes from the Latin 'aurum'."},
+      {q:"Approximate speed of light?",o:["300,000 km/s","150,000 km/s","500,000 km/s","1,000,000 km/s"],a:0,e:"Light travels at ~299,792 km/s in a vacuum."},
+      {q:"Which organ produces insulin?",o:["Liver","Kidney","Pancreas","Spleen"],a:2,e:"The pancreas produces insulin to regulate blood sugar."}
+    ],
+    hist:[
+      {q:"Year World War II ended?",o:["1943","1944","1945","1946"],a:2,e:"WWII ended in 1945."},
+      {q:"First person to walk on the moon?",o:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"],a:2,e:"Neil Armstrong, July 20, 1969."},
+      {q:"Which ancient wonder still stands?",o:["Colossus of Rhodes","Great Pyramid of Giza","Hanging Gardens","Lighthouse of Alexandria"],a:1,e:"The Great Pyramid at Giza is the only one still intact."},
+      {q:"Who painted the Mona Lisa?",o:["Michelangelo","Raphael","Leonardo da Vinci","Caravaggio"],a:2,e:"Da Vinci painted it in the early 16th century."},
+      {q:"Year the Berlin Wall fell?",o:["1987","1988","1989","1991"],a:2,e:"The Berlin Wall fell on November 9, 1989."},
+      {q:"Empire ruled by Genghis Khan?",o:["Ottoman","Roman","Mongol","Persian"],a:2,e:"Genghis Khan founded the Mongol Empire in 1206."},
+      {q:"Ship that sank on its maiden voyage in 1912?",o:["Lusitania","Britannic","Olympic","Titanic"],a:3,e:"RMS Titanic sank April 15, 1912."},
+      {q:"Napoleon was exiled to which island?",o:["Corsica","Sardinia","Malta","Saint Helena"],a:3,e:"Napoleon was exiled to Saint Helena after Waterloo."},
+      {q:"Which country gifted the Statue of Liberty?",o:["Britain","Germany","France","Italy"],a:2,e:"France gave the Statue of Liberty as a symbol of friendship."},
+      {q:"Who wrote the Declaration of Independence?",o:["George Washington","Benjamin Franklin","John Adams","Thomas Jefferson"],a:3,e:"Thomas Jefferson was the primary author."}
+    ],
+    geo:[
+      {q:"Capital of Australia?",o:["Sydney","Melbourne","Canberra","Brisbane"],a:2,e:"Canberra has been Australia's capital since 1913."},
+      {q:"Largest ocean on Earth?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,e:"The Pacific covers over 30% of Earth's surface."},
+      {q:"Country with the most natural lakes?",o:["Russia","USA","Brazil","Canada"],a:3,e:"Canada has over 60% of the world's natural lakes."},
+      {q:"Mount Everest borders Nepal and?",o:["India","Bhutan","Tibet/China","Afghanistan"],a:2,e:"Everest straddles Nepal–Tibet (China)."},
+      {q:"Smallest country in the world?",o:["Monaco","San Marino","Vatican City","Liechtenstein"],a:2,e:"Vatican City covers only 0.44 km²."},
+      {q:"Longest river in the world?",o:["Amazon","Yangtze","Congo","Nile"],a:3,e:"The Nile is approximately 6,650 km long."},
+      {q:"Continent with the most countries?",o:["Asia","Americas","Europe","Africa"],a:3,e:"Africa has 54 recognized sovereign countries."},
+      {q:"Capital of Canada?",o:["Toronto","Vancouver","Ottawa","Montreal"],a:2,e:"Ottawa has been Canada's capital since 1857."},
+      {q:"The Sahara Desert is on which continent?",o:["Asia","Africa","Australia","South America"],a:1,e:"The Sahara spans North Africa."},
+      {q:"Most populous country in the world?",o:["USA","China","India","Indonesia"],a:2,e:"India surpassed China as the most populous in 2023."}
+    ],
+    pop:[
+      {q:"Which franchise features villain 'Thanos'?",o:["DC Extended Universe","Star Wars","Marvel Cinematic Universe","Transformers"],a:2,e:"Thanos is the MCU's Infinity Saga main antagonist."},
+      {q:"Who sang 'Rolling in the Deep'?",o:["Beyoncé","Rihanna","Adele","Amy Winehouse"],a:2,e:"Rolling in the Deep by Adele, 2010."},
+      {q:"Show set in fictional Pawnee, Indiana?",o:["The Office","30 Rock","Parks & Recreation","Community"],a:2,e:"Parks and Recreation is set in Pawnee."},
+      {q:"Spotify's brand color?",o:["Blue","White","Green","Orange"],a:2,e:"Spotify's iconic brand color is green."},
+      {q:"Director of The Dark Knight trilogy?",o:["Zack Snyder","Ridley Scott","Christopher Nolan","J.J. Abrams"],a:2,e:"Christopher Nolan directed all three films."},
+      {q:"Platform that created Stranger Things?",o:["Hulu","HBO","Amazon","Netflix"],a:3,e:"Stranger Things is a Netflix original."},
+      {q:"Author of Harry Potter?",o:["Suzanne Collins","J.R.R. Tolkien","J.K. Rowling","Stephenie Meyer"],a:2,e:"J.K. Rowling wrote all seven Harry Potter novels."},
+      {q:"Best-selling video game of all time?",o:["Tetris","Minecraft","GTA V","Mario Kart 8"],a:1,e:"Minecraft has sold over 300 million copies."},
+      {q:"Band behind 'Bohemian Rhapsody'?",o:["Led Zeppelin","The Beatles","Queen","The Rolling Stones"],a:2,e:"Written by Freddie Mercury, released by Queen in 1975."},
+      {q:"Actress who played Katniss Everdeen?",o:["Emma Watson","Shailene Woodley","Jennifer Lawrence","Hailee Steinfeld"],a:2,e:"Jennifer Lawrence starred in all four Hunger Games films."}
+    ],
+    spo:[
+      {q:"Players on a soccer team on the field?",o:["9","10","11","12"],a:2,e:"Soccer is played 11v11."},
+      {q:"Country with most FIFA World Cup wins?",o:["Germany","Argentina","Italy","Brazil"],a:3,e:"Brazil has won five World Cups."},
+      {q:"Points for a basketball free throw?",o:["1","2","3","4"],a:0,e:"A free throw is worth 1 point."},
+      {q:"How often are the Olympics held?",o:["Every 2 years","Every 3 years","Every 4 years","Every 5 years"],a:2,e:"Each Olympics occurs every four years."},
+      {q:"Sport that uses a shuttlecock?",o:["Squash","Badminton","Pickleball","Table tennis"],a:1,e:"A shuttlecock is used in badminton."},
+      {q:"Length of a marathon?",o:["26.0 miles","26.2 miles","25.0 miles","27.0 miles"],a:1,e:"A marathon is 26.2 miles (42.195 km)."},
+      {q:"Sport where you can slam dunk?",o:["Volleyball","Handball","Basketball","Water polo"],a:2,e:"A slam dunk is a basketball move."},
+      {q:"Tour de France leader's jersey color?",o:["White","Green","Polka-dot","Yellow"],a:3,e:"The leader wears the yellow jersey."},
+      {q:"How many Grand Slam tennis tournaments per year?",o:["3","4","5","6"],a:1,e:"Australian Open, French Open, Wimbledon, US Open."},
+      {q:"Country that invented cricket?",o:["Australia","India","South Africa","England"],a:3,e:"Cricket originated in England in the 16th century."}
+    ],
+    tec:[
+      {q:"CPU stands for?",o:["Central Processing Unit","Core Power Unit","Computer Processing Unit","Central Program Utility"],a:0,e:"The CPU executes instructions in a computer."},
+      {q:"Company that created the iPhone?",o:["Samsung","Google","Apple","Microsoft"],a:2,e:"Apple introduced the first iPhone in 2007."},
+      {q:"HTTP stands for?",o:["HyperText Transfer Protocol","High-Traffic Transfer Page","HyperText Terminal Program","Hosted Transfer Page"],a:0,e:"HTTP is the protocol for transmitting web pages."},
+      {q:"Bits in a byte?",o:["4","6","8","16"],a:2,e:"One byte equals 8 bits."},
+      {q:"Programming language created by Guido van Rossum?",o:["Java","JavaScript","Ruby","Python"],a:3,e:"Python was first released in 1991."},
+      {q:"AI stands for?",o:["Automated Interface","Artificial Intelligence","Automated Integration","Adaptive Input"],a:1,e:"AI = Artificial Intelligence."},
+      {q:"Company that owns YouTube?",o:["Meta","Microsoft","Apple","Google"],a:3,e:"Google acquired YouTube in 2006."},
+      {q:"World's first general-purpose electronic computer?",o:["ENIAC","UNIVAC","Colossus","Z1"],a:0,e:"ENIAC was completed in 1945."},
+      {q:"URL stands for?",o:["Universal Resource Locator","Uniform Resource Locator","Universal Reference Link","Uniform Reference Locator"],a:1,e:"URL = Uniform Resource Locator."},
+      {q:"Social network founded by Mark Zuckerberg?",o:["Twitter/X","Snapchat","TikTok","Facebook"],a:3,e:"Facebook (now Meta) was founded in 2004."}
+    ]
+  },
+  zh:{
+    sci:[
+      {q:"哪颗行星大小与地球最接近？",o:["火星","金星","水星","海王星"],a:1,e:"金星的直径和质量与地球几乎相同。"},
+      {q:"细胞的动力工厂是什么？",o:["细胞核","核糖体","线粒体","溶酶体"],a:2,e:"线粒体通过细胞呼吸产生ATP。"},
+      {q:"人体有多少条染色体？",o:["23条","44条","46条","48条"],a:2,e:"人体有46条染色体，共23对。"},
+      {q:"水的化学分子式是什么？",o:["HO","H2O","H3O","O2H"],a:1,e:"两个氢原子和一个氧原子结合形成水。"},
+      {q:"地球大气层中含量最多的气体？",o:["氧气","二氧化碳","氩气","氮气"],a:3,e:"氮气约占大气层的78%。"},
+      {q:"使行星保持轨道运行的力？",o:["磁力","引力","摩擦力","惯性"],a:1,e:"引力是质量之间的吸引力。"},
+      {q:"成年人体内有多少块骨头？",o:["196块","206块","216块","226块"],a:1,e:"成年人有206块骨头。"},
+      {q:"化学符号Au代表哪种元素？",o:["银","铝","金","铜"],a:2,e:"Au来自拉丁语aurum，意为黄金。"},
+      {q:"光速大约是多少？",o:["每秒30万公里","每秒15万公里","每秒50万公里","每秒100万公里"],a:0,e:"光在真空中约每秒299,792公里。"},
+      {q:"哪个器官产生胰岛素？",o:["肝脏","肾脏","胰腺","脾脏"],a:2,e:"胰腺分泌胰岛素调节血糖。"}
+    ],
+    hist:[
+      {q:"第二次世界大战哪年结束？",o:["1943年","1944年","1945年","1946年"],a:2,e:"二战于1945年结束。"},
+      {q:"第一个登上月球的人？",o:["巴兹·奥尔德林","尤里·加加林","尼尔·阿姆斯特朗","约翰·格伦"],a:2,e:"尼尔·阿姆斯特朗，1969年7月20日。"},
+      {q:"至今仍存在的古代奇迹？",o:["罗德岛太阳神像","吉萨大金字塔","空中花园","亚历山大灯塔"],a:1,e:"吉萨大金字塔是唯一保存至今的古代奇迹。"},
+      {q:"蒙娜丽莎是谁画的？",o:["米开朗基罗","拉斐尔","列奥纳多·达·芬奇","卡拉瓦乔"],a:2,e:"达·芬奇在16世纪初创作了这幅画。"},
+      {q:"柏林墙哪年倒塌？",o:["1987年","1988年","1989年","1991年"],a:2,e:"柏林墙于1989年11月9日倒塌。"},
+      {q:"成吉思汗统治哪个帝国？",o:["奥斯曼帝国","罗马帝国","蒙古帝国","波斯帝国"],a:2,e:"成吉思汗于1206年建立蒙古帝国。"},
+      {q:"1912年处女航沉没的船？",o:["卢西塔尼亚号","不列颠尼克号","奥林匹克号","泰坦尼克号"],a:3,e:"泰坦尼克号于1912年4月15日沉没。"},
+      {q:"拿破仑被流放到哪个岛？",o:["科西嘉岛","撒丁岛","马耳他","圣赫勒拿岛"],a:3,e:"拿破仑在滑铁卢后被流放到圣赫勒拿岛。"},
+      {q:"哪个国家将自由女神像送给美国？",o:["英国","德国","法国","意大利"],a:2,e:"法国将自由女神像作为友谊象征赠给美国。"},
+      {q:"独立宣言是谁起草的？",o:["乔治·华盛顿","本杰明·富兰克林","约翰·亚当斯","托马斯·杰斐逊"],a:3,e:"托马斯·杰斐逊是主要起草人。"}
+    ],
+    geo:[
+      {q:"澳大利亚的首都？",o:["悉尼","墨尔本","堪培拉","布里斯班"],a:2,e:"堪培拉自1913年起成为澳大利亚首都。"},
+      {q:"地球上最大的海洋？",o:["大西洋","印度洋","北冰洋","太平洋"],a:3,e:"太平洋覆盖地球超过30%的面积。"},
+      {q:"哪个国家天然湖泊最多？",o:["俄罗斯","美国","巴西","加拿大"],a:3,e:"加拿大拥有全球超60%的天然湖泊。"},
+      {q:"珠峰位于尼泊尔和哪国边境？",o:["印度","不丹","中国/西藏","阿富汗"],a:2,e:"珠峰横跨尼泊尔与中国西藏边界。"},
+      {q:"世界上最小的国家？",o:["摩纳哥","圣马力诺","梵蒂冈","列支敦士登"],a:2,e:"梵蒂冈面积仅0.44平方公里。"},
+      {q:"世界上最长的河流？",o:["亚马逊河","长江","刚果河","尼罗河"],a:3,e:"尼罗河全长约6,650公里。"},
+      {q:"哪个大洲国家数量最多？",o:["亚洲","美洲","欧洲","非洲"],a:3,e:"非洲有54个主权国家。"},
+      {q:"加拿大的首都？",o:["多伦多","温哥华","渥太华","蒙特利尔"],a:2,e:"渥太华自1857年起成为加拿大首都。"},
+      {q:"撒哈拉沙漠在哪个大洲？",o:["亚洲","非洲","澳洲","南美洲"],a:1,e:"撒哈拉横跨北非。"},
+      {q:"世界人口最多的国家？",o:["美国","中国","印度","印度尼西亚"],a:2,e:"2023年印度超过中国成为人口最多的国家。"}
+    ],
+    pop:[
+      {q:"哪部电影系列有灭霸这个反派？",o:["DC宇宙","星球大战","漫威宇宙","变形金刚"],a:2,e:"灭霸是漫威无限传奇的主要反派。"},
+      {q:"《Rolling in the Deep》是谁演唱的？",o:["碧昂斯","蕾哈娜","阿黛尔","艾米·怀恩豪斯"],a:2,e:"由阿黛尔于2010年发布。"},
+      {q:"哪部美剧发生在虚构小镇波尼？",o:["《办公室》","《30摇滚》","《公园与游憩》","《社区》"],a:2,e:"《公园与游憩》设定在虚构的波尼小镇。"},
+      {q:"Spotify的品牌颜色？",o:["蓝色","白色","绿色","橙色"],a:2,e:"Spotify的标志色是绿色。"},
+      {q:"《黑暗骑士》三部曲导演？",o:["扎克·施奈德","雷德利·斯科特","克里斯托弗·诺兰","J.J.艾布拉姆斯"],a:2,e:"克里斯托弗·诺兰执导了三部影片。"},
+      {q:"《怪奇物语》是哪个平台的原创？",o:["Hulu","HBO","亚马逊","Netflix"],a:3,e:"《怪奇物语》是Netflix的原创剧集。"},
+      {q:"《哈利·波特》作者？",o:["苏珊·柯林斯","托尔金","J.K.罗琳","斯蒂芬妮·梅尔"],a:2,e:"J.K.罗琳创作了全部七部小说。"},
+      {q:"史上最畅销的电子游戏？",o:["俄罗斯方块","我的世界","GTA V","马力欧赛车8"],a:1,e:"《我的世界》销量超3亿份。"},
+      {q:"《波西米亚狂想曲》是哪支乐队的？",o:["齐柏林飞船","披头士","皇后乐队","滚石乐队"],a:2,e:"由皇后乐队1975年发行。"},
+      {q:"谁在《饥饿游戏》中扮演凯特尼斯？",o:["艾玛·沃特森","谢琳·伍德利","詹妮弗·劳伦斯","海莉·斯坦菲尔德"],a:2,e:"詹妮弗·劳伦斯主演全部四部影片。"}
+    ],
+    spo:[
+      {q:"足球每队上场几名球员？",o:["9名","10名","11名","12名"],a:2,e:"足球是11对11的运动。"},
+      {q:"哪国赢得最多次世界杯？",o:["德国","阿根廷","意大利","巴西"],a:3,e:"巴西共五次夺冠。"},
+      {q:"篮球罚球得几分？",o:["1分","2分","3分","4分"],a:0,e:"罚球命中得1分。"},
+      {q:"奥运会每几年举办一次？",o:["2年","3年","4年","5年"],a:2,e:"每四年举办一次。"},
+      {q:"哪项运动使用羽毛球？",o:["壁球","羽毛球","匹克球","乒乓球"],a:1,e:"羽毛球运动使用羽毛球。"},
+      {q:"马拉松标准距离？",o:["42公里","42.195公里","40公里","43公里"],a:1,e:"马拉松全程42.195公里。"},
+      {q:"哪项运动可以灌篮？",o:["排球","手球","篮球","水球"],a:2,e:"灌篮是篮球运动的得分方式。"},
+      {q:"环法领骑者穿什么颜色衫？",o:["白色","绿色","圆点衫","黄色"],a:3,e:"领骑者身穿黄色领骑衫。"},
+      {q:"每年几项网球大满贯？",o:["3项","4项","5项","6项"],a:1,e:"澳网、法网、温网、美网共四项。"},
+      {q:"板球起源于哪个国家？",o:["澳大利亚","印度","南非","英格兰"],a:3,e:"板球起源于英格兰。"}
+    ],
+    tec:[
+      {q:"CPU代表什么？",o:["中央处理器","核心电源单元","计算机处理器","中央程序工具"],a:0,e:"CPU是执行指令的核心组件。"},
+      {q:"哪家公司发明了iPhone？",o:["三星","谷歌","苹果","微软"],a:2,e:"苹果于2007年推出第一代iPhone。"},
+      {q:"HTTP代表什么？",o:["超文本传输协议","高流量传输页面","超文本终端程序","托管传输页面"],a:0,e:"HTTP是传输网页的协议。"},
+      {q:"一个字节等于多少位？",o:["4位","6位","8位","16位"],a:2,e:"1字节等于8位。"},
+      {q:"Python是谁创建的？",o:["James Gosling","Brendan Eich","Matz","吉多·范罗苏姆"],a:3,e:"吉多·范罗苏姆于1991年发布Python。"},
+      {q:"AI代表什么？",o:["自动化界面","人工智能","自动集成","自适应输入"],a:1,e:"AI代表人工智能。"},
+      {q:"哪家公司拥有YouTube？",o:["Meta","微软","苹果","谷歌"],a:3,e:"谷歌于2006年收购YouTube。"},
+      {q:"世界第一台通用电子计算机？",o:["ENIAC","UNIVAC","Colossus","Z1"],a:0,e:"ENIAC于1945年建成。"},
+      {q:"URL代表什么？",o:["通用资源定位符","统一资源定位符","通用参考链接","统一参考定位符"],a:1,e:"URL代表统一资源定位符。"},
+      {q:"Facebook是谁创立的？",o:["杰克·多西","埃文·斯皮格尔","张一鸣","马克·扎克伯格"],a:3,e:"马克·扎克伯格于2004年创立Facebook。"}
+    ]
+  },
+  es:{
+    sci:[
+      {q:"¿Planeta más similar en tamaño a la Tierra?",o:["Marte","Venus","Mercurio","Neptuno"],a:1,e:"Venus es casi idéntico a la Tierra en diámetro y masa."},
+      {q:"¿Central energética de la célula?",o:["Núcleo","Ribosoma","Mitocondria","Lisosoma"],a:2,e:"Las mitocondrias producen ATP."},
+      {q:"¿Cuántos cromosomas tienen los humanos?",o:["23","44","46","48"],a:2,e:"Los humanos tienen 46 cromosomas, 23 pares."},
+      {q:"¿Fórmula química del agua?",o:["HO","H2O","H3O","O2H"],a:1,e:"Dos átomos de hidrógeno y uno de oxígeno."},
+      {q:"¿Gas más abundante en la atmósfera terrestre?",o:["Oxígeno","Dióxido de carbono","Argón","Nitrógeno"],a:3,e:"El nitrógeno constituye ~78% de la atmósfera."},
+      {q:"¿Fuerza que mantiene planetas en órbita?",o:["Magnetismo","Gravedad","Fricción","Inercia"],a:1,e:"La gravedad es la fuerza de atracción entre masas."},
+      {q:"¿Cuántos huesos tiene el cuerpo humano adulto?",o:["196","206","216","226"],a:1,e:"Los adultos tienen 206 huesos."},
+      {q:"¿Elemento con símbolo Au?",o:["Plata","Aluminio","Oro","Cobre"],a:2,e:"Au viene del latín aurum."},
+      {q:"¿Velocidad aproximada de la luz?",o:["300.000 km/s","150.000 km/s","500.000 km/s","1.000.000 km/s"],a:0,e:"La luz viaja a ~299.792 km/s en el vacío."},
+      {q:"¿Qué órgano produce insulina?",o:["Hígado","Riñón","Páncreas","Bazo"],a:2,e:"El páncreas produce insulina."}
+    ],
+    hist:[
+      {q:"¿Año en que terminó la Segunda Guerra Mundial?",o:["1943","1944","1945","1946"],a:2,e:"La WWII terminó en 1945."},
+      {q:"¿Primera persona en caminar en la luna?",o:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"],a:2,e:"Neil Armstrong, 20 de julio de 1969."},
+      {q:"¿Qué maravilla antigua sigue en pie?",o:["Coloso de Rodas","Gran Pirámide de Guiza","Jardines Colgantes","Faro de Alejandría"],a:1,e:"La Gran Pirámide de Guiza es la única intacta."},
+      {q:"¿Quién pintó la Mona Lisa?",o:["Miguel Ángel","Rafael","Leonardo da Vinci","Caravaggio"],a:2,e:"Da Vinci la pintó a principios del s. XVI."},
+      {q:"¿Año en que cayó el Muro de Berlín?",o:["1987","1988","1989","1991"],a:2,e:"El Muro cayó el 9 de noviembre de 1989."},
+      {q:"¿Imperio de Gengis Kan?",o:["Otomano","Romano","Mongol","Persa"],a:2,e:"Gengis Kan fundó el Imperio Mongol en 1206."},
+      {q:"¿Barco hundido en su viaje inaugural en 1912?",o:["Lusitania","Britannic","Olympic","Titanic"],a:3,e:"El Titanic se hundió el 15 de abril de 1912."},
+      {q:"¿Isla de exilio de Napoleón?",o:["Córcega","Cerdeña","Malta","Santa Elena"],a:3,e:"Napoleón fue exiliado a Santa Elena."},
+      {q:"¿País que regaló la Estatua de la Libertad?",o:["Gran Bretaña","Alemania","Francia","Italia"],a:2,e:"Francia la regaló como símbolo de amistad."},
+      {q:"¿Quién redactó la Declaración de Independencia?",o:["George Washington","Benjamin Franklin","John Adams","Thomas Jefferson"],a:3,e:"Thomas Jefferson fue el principal autor."}
+    ],
+    geo:[
+      {q:"¿Capital de Australia?",o:["Sídney","Melbourne","Canberra","Brisbane"],a:2,e:"Canberra es capital desde 1913."},
+      {q:"¿Océano más grande de la Tierra?",o:["Atlántico","Índico","Ártico","Pacífico"],a:3,e:"El Pacífico cubre más del 30% de la superficie terrestre."},
+      {q:"¿País con más lagos naturales?",o:["Rusia","EE. UU.","Brasil","Canadá"],a:3,e:"Canadá tiene más del 60% de los lagos del mundo."},
+      {q:"¿El Everest está entre Nepal y?",o:["India","Bután","Tibet/China","Afganistán"],a:2,e:"El Everest está en la frontera Nepal–Tíbet (China)."},
+      {q:"¿País más pequeño del mundo?",o:["Mónaco","San Marino","Ciudad del Vaticano","Liechtenstein"],a:2,e:"El Vaticano tiene solo 0,44 km²."},
+      {q:"¿Río más largo del mundo?",o:["Amazonas","Yangtsé","Congo","Nilo"],a:3,e:"El Nilo mide aprox. 6.650 km."},
+      {q:"¿Continente con más países?",o:["Asia","América","Europa","África"],a:3,e:"África tiene 54 países soberanos."},
+      {q:"¿Capital de Canadá?",o:["Toronto","Vancouver","Ottawa","Montreal"],a:2,e:"Ottawa es capital desde 1857."},
+      {q:"¿El Sahara está en qué continente?",o:["Asia","África","Australia","América del Sur"],a:1,e:"El Sahara se extiende por el norte de África."},
+      {q:"¿País más poblado del mundo?",o:["EE. UU.","China","India","Indonesia"],a:2,e:"India superó a China en 2023."}
+    ],
+    pop:[
+      {q:"¿Franquicia con el villano Thanos?",o:["Universo DC","Star Wars","Universo Marvel","Transformers"],a:2,e:"Thanos es el antagonista de la Saga del Infinito del MCU."},
+      {q:"¿Quién cantó Rolling in the Deep?",o:["Beyoncé","Rihanna","Adele","Amy Winehouse"],a:2,e:"Adele la lanzó en 2010."},
+      {q:"¿Serie ambientada en Pawnee, Indiana?",o:["The Office","30 Rock","Parks & Recreation","Community"],a:2,e:"Parks and Recreation está en Pawnee."},
+      {q:"¿Color de la marca Spotify?",o:["Azul","Blanco","Verde","Naranja"],a:2,e:"El color de Spotify es el verde."},
+      {q:"¿Director de la trilogía El Caballero Oscuro?",o:["Zack Snyder","Ridley Scott","Christopher Nolan","J.J. Abrams"],a:2,e:"Christopher Nolan dirigió las tres películas."},
+      {q:"¿Plataforma que creó Stranger Things?",o:["Hulu","HBO","Amazon","Netflix"],a:3,e:"Stranger Things es original de Netflix."},
+      {q:"¿Autora de Harry Potter?",o:["Suzanne Collins","J.R.R. Tolkien","J.K. Rowling","Stephenie Meyer"],a:2,e:"J.K. Rowling escribió las siete novelas."},
+      {q:"¿Videojuego más vendido de la historia?",o:["Tetris","Minecraft","GTA V","Mario Kart 8"],a:1,e:"Minecraft ha vendido más de 300 millones de copias."},
+      {q:"¿Banda de Bohemian Rhapsody?",o:["Led Zeppelin","The Beatles","Queen","The Rolling Stones"],a:2,e:"Escrita por Freddie Mercury, lanzada por Queen en 1975."},
+      {q:"¿Actriz que interpretó a Katniss Everdeen?",o:["Emma Watson","Shailene Woodley","Jennifer Lawrence","Hailee Steinfeld"],a:2,e:"Jennifer Lawrence protagonizó las cuatro películas."}
+    ],
+    spo:[
+      {q:"¿Jugadores en campo en fútbol?",o:["9","10","11","12"],a:2,e:"El fútbol se juega 11 contra 11."},
+      {q:"¿País con más Copas del Mundo?",o:["Alemania","Argentina","Italia","Brasil"],a:3,e:"Brasil ha ganado cinco Copas del Mundo."},
+      {q:"¿Puntos por tiro libre en baloncesto?",o:["1","2","3","4"],a:0,e:"Un tiro libre vale 1 punto."},
+      {q:"¿Cada cuántos años son los Juegos Olímpicos?",o:["2","3","4","5"],a:2,e:"Cada cuatro años."},
+      {q:"¿Deporte que usa un volante?",o:["Squash","Bádminton","Pádel","Tenis de mesa"],a:1,e:"El volante se usa en bádminton."},
+      {q:"¿Distancia de una maratón?",o:["42 km","42,195 km","40 km","43 km"],a:1,e:"Una maratón mide 42,195 km."},
+      {q:"¿Deporte donde se hace un mate?",o:["Voleibol","Balonmano","Baloncesto","Waterpolo"],a:2,e:"El mate es un enceste en baloncesto."},
+      {q:"¿Color del maillot del líder del Tour de France?",o:["Blanco","Verde","Lunares","Amarillo"],a:3,e:"El líder viste el maillot amarillo."},
+      {q:"¿Cuántos Grand Slams de tenis hay al año?",o:["3","4","5","6"],a:1,e:"Australian Open, Roland Garros, Wimbledon y US Open."},
+      {q:"¿País que inventó el críquet?",o:["Australia","India","Sudáfrica","Inglaterra"],a:3,e:"El críquet se originó en Inglaterra."}
+    ],
+    tec:[
+      {q:"¿CPU significa?",o:["Unidad Central de Procesamiento","Unidad de Potencia Central","Procesador de Computadora","Utilidad de Programa Central"],a:0,e:"La CPU ejecuta instrucciones."},
+      {q:"¿Empresa que creó el iPhone?",o:["Samsung","Google","Apple","Microsoft"],a:2,e:"Apple presentó el primer iPhone en 2007."},
+      {q:"¿HTTP significa?",o:["Protocolo de Transferencia de HiperTexto","Página de Alta Transferencia","Programa Terminal","Página Alojada"],a:0,e:"HTTP es el protocolo para transmitir páginas web."},
+      {q:"¿Bits en un byte?",o:["4","6","8","16"],a:2,e:"Un byte equivale a 8 bits."},
+      {q:"¿Lenguaje creado por Guido van Rossum?",o:["Java","JavaScript","Ruby","Python"],a:3,e:"Python fue publicado en 1991."},
+      {q:"¿IA significa?",o:["Interfaz Automatizada","Inteligencia Artificial","Integración Automatizada","Entrada Adaptativa"],a:1,e:"IA = Inteligencia Artificial."},
+      {q:"¿Dueño de YouTube?",o:["Meta","Microsoft","Apple","Google"],a:3,e:"Google adquirió YouTube en 2006."},
+      {q:"¿Primer ordenador electrónico de propósito general?",o:["ENIAC","UNIVAC","Colossus","Z1"],a:0,e:"ENIAC fue completado en 1945."},
+      {q:"¿URL significa?",o:["Localizador Universal de Recursos","Localizador Uniforme de Recursos","Enlace Universal","Localizador Uniforme"],a:1,e:"URL = Localizador Uniforme de Recursos."},
+      {q:"¿Fundador de Facebook?",o:["Jack Dorsey","Evan Spiegel","Zhang Yiming","Mark Zuckerberg"],a:3,e:"Mark Zuckerberg cofundó Facebook en 2004."}
+    ]
+  }
+};
+
+var langKey='en', genre=null, qs=[], cur=0, score=0, answered=false;
+
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+function goTo(id){
+  var ids=['s-lang','s-genre','s-quiz','s-result'];
+  for(var i=0;i<ids.length;i++){
+    document.getElementById(ids[i]).style.display = ids[i]===id ? 'block' : 'none';
+  }
+}
+
+function pickLang(l){
+  langKey=l;
+  var L=T[l];
+  document.getElementById('g-title').textContent=L.gTitle;
+  document.getElementById('g-sub').textContent=L.gSub;
+  document.getElementById('back-lang-btn').textContent=L.backLang;
+  var grid=document.getElementById('genre-grid');
+  grid.innerHTML='';
+  L.genres.forEach(function(g){
+    var d=document.createElement('div');
+    d.className='card';
+    d.style.minWidth='120px';
+    d.innerHTML='<div class="icon">'+g.icon+'</div><div class="name">'+g.name+'</div><div class="desc">'+g.desc+'</div>';
+    d.onclick=(function(gg){return function(){startQuiz(gg);};})(g);
+    grid.appendChild(d);
+  });
+  goTo('s-genre');
+}
+
+function startQuiz(g){
+  genre=g;
+  qs=shuffle(QB[langKey][g.id]).slice(0,10);
+  cur=0; score=0; answered=false;
+  goTo('s-quiz');
+  renderQ();
+}
+
+function renderQ(){
+  var L=T[langKey];
+  var q=qs[cur];
+  answered=false;
+  document.getElementById('q-badge').textContent=genre.icon+' '+genre.name;
+  document.getElementById('q-badge').style.background=genre.bg;
+  document.getElementById('q-badge').style.color=genre.col;
+  document.getElementById('q-score').textContent=L.score+': '+score;
+  document.getElementById('q-bar').style.width=(cur/qs.length*100)+'%';
+  document.getElementById('q-num').textContent=L.q+' '+(cur+1)+' '+L.of+' '+qs.length;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-exp').textContent='';
+  var nxt=document.getElementById('q-next');
+  nxt.className='btn hidden';
+  var opts=document.getElementById('q-opts');
+  opts.innerHTML='';
+  q.o.forEach(function(o,i){
+    var b=document.createElement('button');
+    b.className='opt';
+    b.textContent=o;
+    b.onclick=(function(idx){return function(){pick(idx);};})(i);
+    opts.appendChild(b);
+  });
+}
+
+function pick(i){
+  if(answered)return;
+  answered=true;
+  var L=T[langKey];
+  var q=qs[cur];
+  var btns=document.getElementById('q-opts').querySelectorAll('.opt');
+  btns.forEach(function(b){b.disabled=true;});
+  btns[i].className='opt '+(i===q.a?'correct':'wrong');
+  if(i!==q.a) btns[q.a].className='opt correct';
+  if(i===q.a) score++;
+  document.getElementById('q-exp').textContent=q.e;
+  var nxt=document.getElementById('q-next');
+  nxt.className='btn';
+  nxt.textContent=cur<qs.length-1?L.next:L.results;
+}
+
+function nextQ(){
+  cur++;
+  if(cur>=qs.length){showResult();}
+  else{renderQ();}
+}
+
+function showResult(){
+  var L=T[langKey];
+  var pct=Math.round(score/qs.length*100);
+  document.getElementById('r-badge').textContent=genre.icon+' '+genre.name;
+  document.getElementById('r-badge').style.background=genre.bg;
+  document.getElementById('r-badge').style.color=genre.col;
+  document.getElementById('r-score').textContent=score+'/'+qs.length;
+  document.getElementById('r-msg').textContent=pct+'% — '+L.msg(pct);
+  document.getElementById('r-again').textContent=L.again;
+  document.getElementById('r-genre').textContent=L.chGenre;
+  document.getElementById('r-lang').textContent=L.chLang;
+  goTo('s-result');
+}
+
+function playAgain(){startQuiz(genre);}
+function goGenre(){goTo('s-genre');}
+</script>
+</body>
+</html>
